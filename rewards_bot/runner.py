@@ -7,6 +7,7 @@ from .agent import AgentAbort, RewardsAgent
 from .basic import BasicRunner
 from .browser import BrowserSession, LoginRequired
 from .config import AppConfig
+from .dom import is_rewards_home_url
 from .llm import LLMError
 
 
@@ -61,10 +62,10 @@ def run_once(cfg: AppConfig, mode: str | None = None) -> bool:
             try:
                 session.open_dashboard()
             except LoginRequired as exc:
-                log.error("无法回到仪表盘，跳过领取与搜索：%s", exc)
+                log.error("无法回到任务页，跳过领取与搜索：%s", exc)
                 success = False
             except Exception as exc:
-                log.warning("无法回到仪表盘，跳过领取与搜索：%s", exc)
+                log.warning("无法回到任务页，跳过领取与搜索：%s", exc)
                 success = False
             else:
                 if cfg.basic.auto_claim:
@@ -90,7 +91,9 @@ def run_once(cfg: AppConfig, mode: str | None = None) -> bool:
                     log.info("自动搜索未启用（basic.search_enabled=false）。")
 
                 try:
-                    if not session.current_page.url.endswith("/dashboard"):
+                    if not is_rewards_home_url(
+                        session.current_page.url, cfg.general.url
+                    ):
                         session.open_dashboard()
                     session.screenshot("final", full_page=True)
                 except Exception as exc:

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-label="一次自动巡航：打开仪表盘 → 扫描任务 → 规则或模型决策 → 浏览与作答 → 只领取 Claim">
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-label="一次自动巡航：打开任务页 → 扫描任务 → 规则或模型决策 → 浏览与作答 → 只领取 Claim">
   <title>一次自动巡航的五个动作</title>
   <defs>
     <linearGradient id="ffbg" x1="0" y1="0" x2="1" y2="1">
@@ -30,7 +30,7 @@
         <animate attributeName="opacity" values="0.1;0.8;0.1" dur="7s" repeatCount="indefinite"/>
       </rect>
       <text x="58" y="94" fill="#5F87B5" font-family="Consolas, monospace" font-size="12">01</text>
-      <text x="58" y="124" fill="#EAF3FF" font-size="18" font-weight="700">打开仪表盘</text>
+      <text x="58" y="124" fill="#EAF3FF" font-size="18" font-weight="700">打开任务页</text>
       <text x="58" y="148" fill="#8FA9C9" font-size="12.5">复用 Edge 登录态，打开官方页面</text>
     </g>
 

@@ -47,7 +47,7 @@ class BasicOfflineTests(unittest.TestCase):
             cfg_path.write_text(
                 f"""
 [general]
-url = "https://rewards.bing.com/dashboard"
+url = "https://rewards.bing.com/earn"
 timezone = "Asia/Shanghai"
 run_at = "08:30"
 mode = "basic"
@@ -77,7 +77,7 @@ read_wait_seconds = 1
                 def handle(route) -> None:
                     url = route.request.url
                     visits.append(url)
-                    if url.startswith("https://rewards.bing.com/dashboard"):
+                    if url.startswith("https://rewards.bing.com/earn"):
                         route.fulfill(
                             status=200,
                             content_type="text/html; charset=utf-8",
@@ -95,7 +95,7 @@ read_wait_seconds = 1
 
                 context.route("**/*", handle)
                 page = context.new_page()
-                page.goto("https://rewards.bing.com/dashboard")
+                page.goto("https://rewards.bing.com/earn")
 
                 class FakeSession:
                     def __init__(self, page) -> None:
@@ -106,7 +106,7 @@ read_wait_seconds = 1
                         return self.page
 
                     def open_dashboard(self):
-                        self.page.goto("https://rewards.bing.com/dashboard")
+                        self.page.goto("https://rewards.bing.com/earn")
                         return self.page
 
                     def is_login_page(self) -> bool:
@@ -143,7 +143,7 @@ read_wait_seconds = 1
             self.assertEqual(blocked, [])
             self.assertEqual(
                 [url for url in visits if url.startswith("https://rewards.bing.com")][0],
-                "https://rewards.bing.com/dashboard",
+                "https://rewards.bing.com/earn",
             )
             self.assertEqual(
                 (urlparse(visits[-1]).hostname or ""), "rewards.bing.com"

@@ -139,7 +139,7 @@ export function formatBytes(bytes) {
 const SHOT_LABELS = [
   ["login-success", "登录成功"],
   ["login", "登录现场"],
-  ["dashboard", "仪表盘"],
+  ["dashboard", "任务页"],
   ["summary", "任务总览"],
   ["task", "任务页面"],
   ["quiz", "问答现场"],

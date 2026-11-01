@@ -1,6 +1,6 @@
 [general]
-# 打开的任务页面。一般不需要改。
-url = "https://rewards.bing.com/dashboard"
+# 打开的任务页面。新版 Rewards 的每日任务集中在 /earn。
+url = "https://rewards.bing.com/earn"
 
 # 调度使用的时区。中国用户一般为 Asia/Shanghai。
 timezone = "Asia/Shanghai"
@@ -36,7 +36,7 @@ catch_up = true
 auto_exit_after_run = false
 
 [basic]
-# 一轮最多尝试多少个仪表盘任务卡片。
+# 一轮最多尝试多少个任务页卡片。
 max_tasks = 8
 
 # 每个任务页面最多尝试多少轮“选答案/点继续”。

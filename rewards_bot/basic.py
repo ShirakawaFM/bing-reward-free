@@ -10,7 +10,7 @@ from playwright.sync_api import Error as PlaywrightError
 
 from .browser import BrowserSession, LoginRequired
 from .config import AppConfig
-from .dom import host_allowed, is_dashboard_url
+from .dom import host_allowed, is_rewards_home_url
 from .tasks_catalog import (
     SUPPORT_BASIC,
     TASK_BY_ID,
@@ -198,8 +198,8 @@ MARK_ANSWER_JS = r"""
     }
   }
 
-  // 仅当页面明显离开仪表盘、且存在测验容器时，做最后兜底。
-  if (location.pathname.replace(/\/+$/, '').toLowerCase().endsWith('/dashboard')) return '';
+  // 仅当页面明显离开任务列表页、且存在测验容器时，做最后兜底。
+  if (/\/(dashboard|earn)$/i.test(location.pathname.replace(/\/+$/, ''))) return '';
 
   const pageText = norm(document.body ? document.body.innerText.slice(0, 8000) : '');
   if (!/(quiz|测验|測驗|问答|問答|投票|poll|this or that)/i.test(pageText)) return '';
@@ -410,7 +410,7 @@ class BasicRunner:
 
     def _ensure_dashboard(self):
         page = self.session.current_page
-        if is_dashboard_url(page.url, self.dashboard_url) and not self.session.is_login_page():
+        if is_rewards_home_url(page.url, self.dashboard_url) and not self.session.is_login_page():
             return page
         page = self.session.open_dashboard()
         return page
@@ -571,8 +571,8 @@ class BasicRunner:
                     except LoginRequired:
                         raise
                     except Exception as exc:
-                        self.log.warning("返回仪表盘失败：%s", exc)
-                        # 无法回到仪表盘时结束本轮任务，避免继续在未知页面点击。
+                        self.log.warning("返回任务页失败：%s", exc)
+                        # 无法回到任务页时结束本轮任务，避免继续在未知页面点击。
                         dashboard_failed = True
                 if dashboard_failed:
                     return processed
@@ -654,7 +654,7 @@ class BasicRunner:
             else:
                 same_state = 0
                 state = new_state
-            if is_dashboard_url(page.url, self.dashboard_url):
+            if is_rewards_home_url(page.url, self.dashboard_url):
                 break
 
         if actions == 0:
@@ -688,7 +688,7 @@ class BasicRunner:
         except LoginRequired:
             raise
         except Exception as exc:
-            self.log.warning("领取奖励前无法打开仪表盘：%s", exc)
+            self.log.warning("领取奖励前无法打开任务页：%s", exc)
             return 0
 
         for scan in range(2):

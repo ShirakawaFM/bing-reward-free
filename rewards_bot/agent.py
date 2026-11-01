@@ -14,7 +14,7 @@ from .dom import (
     click_block_reason,
     format_observation,
     host_allowed,
-    is_dashboard_url,
+    is_rewards_home_url,
     observe,
 )
 from .llm import LLMClient, LLMError
@@ -22,10 +22,10 @@ from .llm import LLMClient, LLMError
 SYSTEM_PROMPT = """你是 Microsoft Rewards 日常任务助手，正在代替账户所有者操作一个已经登录的浏览器。你的目标是用尽量少的步骤完成网页上的日常任务，并安全收尾。
 
 ## 目标
-1. 在 Microsoft Rewards 仪表盘上完成“每日集 / Daily set / 每日任务”里可见的简单任务，例如测验、投票、打卡。
+1. 在 Microsoft Rewards 任务页上完成“每日集 / Daily set / 每日任务”里可见的简单任务，例如测验、投票、打卡。
 2. 任务页面出现测验或投票时，选择一个看起来合理的选项，然后点击“下一页 / 下一题 / 提交 / 投票 / 完成 / Next / Continue / Submit / Done”等按钮继续，直到出现积分奖励或任务完成。
-3. 有些每日任务只是打开一个 Bing 搜索或阅读页面，页面上没有答题控件。这类任务打开后停留约 4–6 秒即可视为完成，然后返回仪表盘，不要点击搜索结果、广告或翻页按钮。
-4. 完成后返回仪表盘，继续处理尚未完成的任务。
+3. 有些每日任务只是打开一个 Bing 搜索或阅读页面，页面上没有答题控件。这类任务打开后停留约 4–6 秒即可视为完成，然后返回任务页，不要点击搜索结果、广告或翻页按钮。
+4. 完成后返回任务页，继续处理尚未完成的任务。
 5. 只有在页面上出现明确的“领取 / Claim”时才可以领取已获得的积分。
 6. 所有可做的日常任务都完成、没有新的任务、或页面要求你登录/验证时，使用 finish。
 
@@ -41,11 +41,11 @@ SYSTEM_PROMPT = """你是 Microsoft Rewards 日常任务助手，正在代替账
 
 ## 操作建议
 - 你看到的页面元素带有 id，点击时填写 id。页头/页脚和导航区域的元素由 region 标注，优先操作 region=main 或 dialog 的内容。
-- 如果点击后页面没有变化，不要连续重复同一个动作。可以滚动、等待，或者导航回仪表盘。
-- 对于没有按钮的阅读类任务，点击任务卡片后等待几秒即可返回仪表盘。
+- 如果点击后页面没有变化，不要连续重复同一个动作。可以滚动、等待，或者导航回任务页。
+- 对于没有按钮的阅读类任务，点击任务卡片后等待几秒即可返回任务页。
 - 页面文字含“已完成 / Completed”的卡片不要再次点击。
 - 不要试图赚取搜索积分以外的额外任务；这个程序有独立的搜索模块。
-- 如果一项任务明显失败，不要卡住；返回仪表盘继续其他任务。
+- 如果一项任务明显失败，不要卡住；返回任务页继续其他任务。
 - 在认为日常任务已经全部处理完时，主动 finish 并说明原因。
 
 ## 输出格式
@@ -57,7 +57,7 @@ SYSTEM_PROMPT = """你是 Microsoft Rewards 日常任务助手，正在代替账
 {{"reason":"简短说明","action":"navigate","url":"{dashboard_url}"}}
 {{"reason":"简短说明","action":"finish","summary":"本轮完成情况"}}
 
-只允许上述 action。navigate 只能导航到仪表盘。"""
+只允许上述 action。navigate 只能导航到任务页。"""
 
 
 class AgentAbort(RuntimeError):
@@ -157,7 +157,7 @@ class RewardsAgent:
 
             # 防止模型在两个页面之间无限来回。
             if not ok and repeats >= 3:
-                history.append("系统提示：同一动作已连续失败多次，请改用返回仪表盘/滚动/等待，或 finish。")
+                history.append("系统提示：同一动作已连续失败多次，请改用返回任务页/滚动/等待，或 finish。")
             if repeats >= 6:
                 raise AgentAbort("检测到连续 6 次完全相同的无效动作，已停止。")
             time.sleep(0.6)
@@ -291,7 +291,7 @@ class RewardsAgent:
                 self.log.warning("点击后进入未允许的域名：%s", current_url[:200])
                 self.session.screenshot("blocked-host")
                 self.session.goto(self.dashboard_url)
-                return False, f"点击后进入了不允许的域名 {host}，已返回仪表盘。"
+                return False, f"点击后进入了不允许的域名 {host}，已返回任务页。"
             label = str(info.get("text") or "").replace("\n", " ")[:80]
             return True, f"已点击“{label}”，当前页面：{current_url[:160]}"
 
@@ -316,16 +316,16 @@ class RewardsAgent:
             host = (urlparse(self.session.current_page.url).hostname or "").lower()
             if host and not host_allowed(host, self.allowed_hosts):
                 self.session.goto(self.dashboard_url)
-                return False, "返回到了不允许的域名，已转到仪表盘。"
+                return False, "返回到了不允许的域名，已转到任务页。"
             return True, f"已返回上一页：{self.session.current_page.url[:160]}"
 
         if kind == "navigate":
             url = action.get("url", "")
-            if not is_dashboard_url(url, self.dashboard_url):
-                return False, "navigate 只允许回到 Microsoft Rewards 仪表盘。"
+            if not is_rewards_home_url(url, self.dashboard_url):
+                return False, "navigate 只允许回到 Microsoft Rewards 任务页。"
             self.session.goto(self.dashboard_url)
             if self.session.is_login_page():
                 raise LoginRequired("导航后进入登录页，请手动运行 --login。")
-            return True, "已返回仪表盘。"
+            return True, "已返回任务页。"
 
         return False, f"未处理的动作：{kind}"

@@ -13,7 +13,7 @@ from rewards_bot.config import AppConfig, ConfigError, load_config
 log = logging.getLogger("rewards_bot.gui.settings")
 
 _FALLBACK_CONFIG = """[general]
-url = "https://rewards.bing.com/dashboard"
+url = "https://rewards.bing.com/earn"
 timezone = "Asia/Shanghai"
 run_at = "08:30"
 mode = "basic"

@@ -161,7 +161,7 @@ export default function Overview({
           </h2>
 
           <p className="hero-lede">
-            自动打开 Rewards 仪表盘，识别每日任务，完成问答并领取奖励。
+            自动打开 Rewards 任务页，识别每日任务，完成问答并领取奖励。
             基础规则模式开箱即用，进阶模式让 DeepSeek 基于元素索引做出下一步决策。
           </p>
 
@@ -483,7 +483,7 @@ export default function Overview({
             </span>
             <div>
               <strong>还没有运行截图</strong>
-              <p>第一次任务结束后，仪表盘、问答页和领取结果会自动留档。</p>
+              <p>第一次任务结束后，任务页、问答页和领取结果会自动留档。</p>
             </div>
             <span className="empty-strip-tag">
               <Zap size={13} />

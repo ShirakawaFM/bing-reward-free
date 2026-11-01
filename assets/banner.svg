@@ -103,7 +103,7 @@
       <circle cx="856" cy="106" r="3" fill="#2BE8C4" opacity="0.8"/>
     </g>
     <rect x="878" y="99" width="268" height="16" rx="8" fill="#061428"/>
-    <text x="1012" y="111" text-anchor="middle" fill="#5F87B5" font-family="Consolas, 'Courier New', monospace" font-size="9.5">rewards.bing.com/dashboard</text>
+    <text x="1012" y="111" text-anchor="middle" fill="#5F87B5" font-family="Consolas, 'Courier New', monospace" font-size="9.5">rewards.bing.com/earn</text>
 
     <text x="826" y="144" fill="#7FB2FF" font-family="Consolas, 'Courier New', monospace" font-size="10.5" letter-spacing="2">DAILY SET</text>
     <circle cx="1158" cy="140" r="5" fill="#FFC46B" opacity="0.9"/>

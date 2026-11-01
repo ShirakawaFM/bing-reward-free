@@ -249,3 +249,26 @@ def is_dashboard_url(url: str, dashboard_url: str) -> bool:
         )
     except ValueError:
         return False
+
+
+REWARDS_HOME_PATHS = {"/dashboard", "/earn"}
+
+
+def is_rewards_home_url(url: str, base_url: str) -> bool:
+    """Rewards 新版 /earn 与旧版 /dashboard 都算任务主页，兼容服务端重定向。"""
+
+    try:
+        current = urlparse(url)
+        base = urlparse(base_url)
+    except ValueError:
+        return False
+    if (current.hostname or "").lower() != (base.hostname or "").lower():
+        return False
+    current_path = ((current.path or "/").rstrip("/") or "/").lower()
+    base_path = ((base.path or "/").rstrip("/") or "/").lower()
+    if current_path == base_path:
+        return True
+    host = (base.hostname or "").lower()
+    if host == "rewards.bing.com" or host.endswith(".rewards.bing.com"):
+        return current_path in REWARDS_HOME_PATHS and base_path in REWARDS_HOME_PATHS
+    return False

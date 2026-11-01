@@ -30,7 +30,7 @@ const STATUS = {
   },
   checking: {
     title: "正在检查登录状态",
-    text: "正在重新打开 Rewards 仪表盘，确认登录态是否完整…",
+    text: "正在重新打开 Rewards 任务页，确认登录态是否完整…",
     tone: "waiting",
     icon: Spinner,
   },
@@ -175,12 +175,12 @@ export default function LoginModal({
           程序不会读取或保存你的密码，登录过程完全发生在微软官方页面。
         </span>
         <a
-          href="https://rewards.bing.com/dashboard"
+          href="https://rewards.bing.com/earn"
           target="_blank"
           rel="noreferrer"
           className="login-link"
         >
-          Rewards 仪表盘
+          Rewards 任务页
           <ExternalLink size={12} />
         </a>
       </div>

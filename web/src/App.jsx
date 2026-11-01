@@ -139,7 +139,7 @@ export default function App() {
           message:
             target === "advanced"
               ? "进阶 AI 模式启动，浏览器会自动打开，决策轨迹见实时日志。"
-              : "基础模式启动，正在扫描仪表盘任务。",
+              : "基础模式启动，正在扫描 Rewards 任务页。",
         });
         await refreshState();
       } catch (error) {

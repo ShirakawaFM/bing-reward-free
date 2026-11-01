@@ -229,7 +229,7 @@ class BrowserSession:
             return False
 
     def open_dashboard(self) -> Page:
-        """打开仪表盘，并确认登录态。失败时抛出 LoginRequired。"""
+        """打开 Rewards 任务页，并确认登录态。失败时抛出 LoginRequired。"""
         for attempt in range(2):
             self.goto(self.cfg.general.url)
             page = self.current_page
@@ -246,10 +246,10 @@ class BrowserSession:
         if not (host == "rewards.bing.com" or host.endswith(".rewards.bing.com")):
             self.screenshot("unexpected-page")
             raise BrowserError(
-                f"打开仪表盘后进入了非预期页面：{page.url}\n"
+                f"打开任务页后进入了非预期页面：{page.url}\n"
                 "可能是网络、验证码或地区重定向问题，请先手动运行 --login 查看页面。"
             )
-        self.log.info("仪表盘已打开：%s", page.url)
+        self.log.info("任务页已打开：%s", page.url)
         return page
 
     def screenshot(self, name: str, full_page: bool = False) -> Path | None:
@@ -292,7 +292,7 @@ def run_interactive_login(cfg: AppConfig) -> int:
             print(f"打开页面失败：{exc}")
             return 1
         if session.is_login_page():
-            print("请在浏览器窗口中登录。登录后会自动回到 Rewards 仪表盘。")
+            print("请在浏览器窗口中登录。登录后会自动回到 Rewards 任务页。")
         else:
             print("检测到当前浏览器配置已经登录。")
         try:

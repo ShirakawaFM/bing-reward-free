@@ -5,12 +5,15 @@ import re
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from .paths import PROJECT_ROOT
 from .tasks_catalog import DEFAULT_TASK_TYPES, validate_task_types
 
 _RUN_AT_RE = re.compile(r"^([01]?\d|2[0-3]):([0-5]\d)$")
+
+DEFAULT_REWARDS_URL = "https://rewards.bing.com/earn"
 
 
 class ConfigError(ValueError):
@@ -19,7 +22,7 @@ class ConfigError(ValueError):
 
 @dataclass(slots=True)
 class GeneralConfig:
-    url: str = "https://rewards.bing.com/dashboard"
+    url: str = DEFAULT_REWARDS_URL
     timezone: str = "Asia/Shanghai"
     run_at: str = "08:30"
     mode: str = "basic"
@@ -117,6 +120,31 @@ def _get(table: dict, key: str, default):
     return default if value is None else value
 
 
+def normalize_rewards_url(value: object) -> str:
+    """把旧版默认的 /dashboard 迁移到当前任务页 /earn，其他地址保持原样。"""
+
+    text = str(value).strip() if value is not None else ""
+    if not text:
+        return DEFAULT_REWARDS_URL
+    try:
+        parts = urlsplit(text)
+    except ValueError:
+        return text
+    host = (parts.hostname or "").lower()
+    path = (parts.path or "/").rstrip("/").lower() or "/"
+    if host == "rewards.bing.com" and path == "/dashboard":
+        return urlunsplit(
+            (
+                parts.scheme or "https",
+                parts.netloc or "rewards.bing.com",
+                "/earn",
+                parts.query,
+                parts.fragment,
+            )
+        )
+    return text
+
+
 def load_config(path: str | Path) -> AppConfig:
     config_path = Path(path).expanduser().resolve()
     if not config_path.exists():
@@ -151,7 +179,7 @@ def load_config(path: str | Path) -> AppConfig:
         raise ConfigError("general.mode 只能是 basic 或 advanced。")
 
     general = GeneralConfig(
-        url=str(_get(g, "url", "https://rewards.bing.com/dashboard")).strip(),
+        url=normalize_rewards_url(_get(g, "url", DEFAULT_REWARDS_URL)),
         timezone=timezone_name,
         run_at=run_at,
         mode=mode,

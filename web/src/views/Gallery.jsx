@@ -87,7 +87,7 @@ export default function Gallery({ screenshots, loading, onRefresh }) {
           </div>
           <h3>等待第一次巡航</h3>
           <p>
-            任务启动后，程序会在仪表盘、问答页、领取结果等关键节点截图，
+            任务启动后，程序会在任务页、问答页、领取结果等关键节点截图，
             方便你核对每一步发生了什么。
           </p>
           <span className="gallery-empty-tag">截图只保存在本机 state/screenshots</span>

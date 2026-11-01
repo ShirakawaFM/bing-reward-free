@@ -61,6 +61,7 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 | 🧭 **四步首次向导** | 登录、模式、任务、运行时间四页；大字标题配小字说明，每页都可跳过，跳过不写配置 |
 | 🎛️ **React 现代控制台** | React 19 + Vite，总览、实时日志、运行截图、设置四页，深色极光玻璃风格，桌面与窄屏自适应 |
 | ⚙️ **基础模式开箱即用** | 不调用大模型，内置规则扫描卡片、识别测验/投票、作答、返回，并领取文字明确的 Claim 奖励 |
+| 🧭 **新版任务页** | 默认打开 Rewards `/earn` 任务页；旧配置里的 `/dashboard` 自动迁移，并兼容服务端重定向 |
 | 🤖 **DeepSeek 元素索引** | 把最多 140 个可见交互元素编号后交给模型决策，支持 `click / scroll / wait / back / navigate / finish` |
 | ✅ **23 种任务清单** | 11 种基础卡片逐项勾选；4 种仅进阶 AI、6 种需人工处理的类型会显示但保持锁定 |
 | 📈 **首页积分预估** | 大字显示每日 / 每周本地估算，列出未启用项与全部开启后的增量，一键跳到设置并高亮对应选项 |
@@ -70,9 +71,9 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 | 🌅 **开机自启 + 跑完退出** | 开启一个开关，同时登记 Windows 当前用户启动项；每日定时任务成功后自动关闭托盘与后端，下次登录再回到托盘 |
 | 🔒 **本地优先** | 后端只监听 `127.0.0.1` 并使用一次性令牌；登录态、日志、截图不出本机；API Key 不写日志 |
 
-<img src="assets/flow.svg?v=2" alt="一次运行的五步：打开仪表盘 → 扫描任务 → 规则或模型决策 → 浏览与作答 → 只领取 Claim" width="100%" />
+<img src="assets/flow.svg?v=3" alt="一次运行的五步：打开任务页 → 扫描任务 → 规则或模型决策 → 浏览与作答 → 只领取 Claim" width="100%" />
 
-一次运行只做五件事：**打开仪表盘 → 扫描任务卡片 → 规则或模型决策 → 浏览与作答 → 只领取 Claim。** 不兑换、不购买、不修改账号。
+一次运行只做五件事：**打开任务页 → 扫描任务卡片 → 规则或模型决策 → 浏览与作答 → 只领取 Claim。** 不兑换、不购买、不修改账号。
 
 ---
 
@@ -136,9 +137,9 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 - **首页积分预估**：按当前任务勾选、搜索和自动领取开关，用大字给出每日 / 每周的本地估算区间；同时显示还有哪些任务未启用、全部开启后能多拿多少。点击“还有提升空间”会直接跳到设置里未勾选的选项，并滚动、高亮对应卡片。
 - **任务浏览器专属标识**：程序自动打开的 Edge 任务窗口会换成独立的闪电/仪表盘图标，并在任务栏按钮上叠加徽标；你自己已经打开的 Edge 窗口不会被改动。
 - **低功耗挂机**：切换到 Windows 节能计划、把自身降到空闲优先级并启用 EcoQoS、阻止系统空闲休眠，目标连续待命 7 天；期间任务强制无头运行，只保留一个 Rewards Pilot 实例。可选清理仅限你勾选的白名单应用。
-- 基础模式自动扫描仪表盘任务卡片，跳过“已完成 / 兑换 / 购买 / 设置 / 隐私 / 站外链接”等高风险内容。
+- 基础模式自动扫描 Rewards 任务页（`/earn`）的卡片，跳过“已完成 / 兑换 / 购买 / 设置 / 隐私 / 站外链接”等高风险内容。
 - 自动识别常见测验/投票控件，选择选项并点击“下一页 / 提交 / 完成”等按钮。
-- 对“打开即完成”的 Bing 搜索/阅读类任务，停留数秒后返回仪表盘。
+- 对“打开即完成”的 Bing 搜索/阅读类任务，停留数秒后返回任务页。
 - 只点击文字明确的“领取 / 领取奖励 / Claim”按钮，绝不点击“兑换 / Redeem”。
 - 可选自动搜索（默认关闭，更容易触发风控）。
 - 进阶模式：DOM 元素编号 + JSON 动作，最多 140 个可见交互元素，防止模型猜测不存在的元素。
@@ -202,7 +203,7 @@ copy config.example.toml config.toml
 
 - **总览**：积分预估与提升空间、运行/登录入口、模式切换、最近状态、实时日志预览、每日计划与安全开关。
 - **实时日志**：按 `ALL / INFO / WARN / ERROR` 筛选、搜索、复制、自动滚动。
-- **运行截图**：按批次浏览仪表盘、任务页、领取结果等关键截图，支持放大和下载。
+- **运行截图**：按批次浏览任务页、问答页、领取结果等关键截图，支持放大和下载。
 - **设置**：编辑调度时间、基础参数、任务勾选、低功耗挂机和 DeepSeek 接口，执行环境自检，退出应用。
 
 首次启动时，控制台会自动弹出四步快速设置：登录、模式、任务、运行时间。跳过、关闭或按 Esc 都不会改动现有配置；只有最后一步“保存并进入”会写入改动。登录按钮只打开微软官方登录页；每日调度默认关闭，开启后从下一个计划时间开始，不补跑当天。所有选项之后都能在设置页修改。
@@ -225,7 +226,7 @@ copy config.example.toml config.toml
 会打开有界面的 Edge：
 
 1. 在弹出的浏览器里登录 Microsoft 账号，完成双重验证或验证码。
-2. 等页面回到 Rewards 仪表盘后，回到终端按 Enter。
+2. 等页面回到 Rewards 任务页后，回到终端按 Enter。
 3. 登录态保存在 `.browser-profile` 目录，后续运行直接复用。
 
 > 登录态会过期，也可能被 Microsoft 主动失效。遇到“登录已失效”时重新执行 `--login` 即可。
@@ -254,12 +255,12 @@ copy config.example.toml config.toml
 
 不调用任何 API。流程：
 
-1. 打开仪表盘，扫描带链接的任务卡片。
+1. 打开 Rewards 任务页（`https://rewards.bing.com/earn`），扫描带链接的任务卡片。
 2. 只保留带积分数字或“测验 / 投票 / 每日任务 / quiz / poll”等关键词的卡片，跳过已完成、兑换、购买、设置、隐私、站外链接。
 3. 逐个打开任务：
    - 如果检测到测验/投票，自动选择第一个可用选项，然后点击“下一页 / 下一题 / 提交 / 投票 / 完成”等按钮，直到没有可操作项或达到轮数上限。
    - 如果没有测验控件，视为搜索/阅读类任务，滚动一下并停留 `read_wait_seconds` 秒后返回。
-4. 返回仪表盘，继续下一个任务，最多 `max_tasks` 个。
+4. 返回任务页，继续下一个任务，最多 `max_tasks` 个。
 5. 扫描“领取 / Claim”按钮，点击并确认领取弹窗。
 
 运行：
@@ -279,9 +280,9 @@ copy config.example.toml config.toml
 3. 发给 DeepSeek（OpenAI 兼容 Chat Completions），要求只返回一个 JSON 动作：
    - `click`：点击某个编号元素；
    - `scroll` / `wait` / `back`：滚动、等待、返回；
-   - `navigate`：只允许回到配置的仪表盘；
+   - `navigate`：只允许回到配置的任务页；
    - `finish`：结束本轮。
-4. 执行前做安全校验：域名白名单、拒绝兑换/购买/支付/设置/退出/删除等文字和路径、禁止点击密码框、禁止导航到非仪表盘地址；点击后如果跳到登录页或站外域名会中止或返回仪表盘。
+4. 执行前做安全校验：域名白名单、拒绝兑换/购买/支付/设置/退出/删除等文字和路径、禁止点击密码框、禁止导航到非任务页地址；点击后如果跳到登录页或站外域名会中止或返回任务页。
 5. 防止模型卡死：连续 3 次无效输出、连续 6 次相同动作、达到步数/时间上限都会停止。
 
 配置 API Key（二选一）：
@@ -335,7 +336,7 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 
 筛选方式：
 
-1. 扫描仪表盘卡片后，按卡片文字和所在分区归类：先匹配人工/AI 专属关键词，再识别签到、二选一、测验、投票、视频，最后按“每日”或“其他”落回浏览类。
+1. 扫描任务页卡片后，按卡片文字和所在分区归类：先匹配人工/AI 专属关键词，再识别签到、二选一、测验、投票、视频，最后按“每日”或“其他”落回浏览类。
 2. 只有归类结果在你勾选的 11 种卡片内，才会打开该卡片；未勾选、锁定或无法识别的卡片会跳过，并在日志里记录“未勾选 / 锁定类型”。
 3. 设置页的“全选”勾上全部 11 种基础卡片；“推荐”恢复默认的 11 种。基础卡片一个都不勾时会提示，本轮只做领取（如果领取开关开启），不处理任务卡片。
 
@@ -385,7 +386,7 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 
 | 配置项 | 默认（示例） | 说明 |
 | --- | --- | --- |
-| `url` | `https://rewards.bing.com/dashboard` | 仪表盘地址，一般不改 |
+| `url` | `https://rewards.bing.com/earn` | 任务页地址，一般不改；旧配置的 `/dashboard` 会自动迁移到 `/earn` |
 | `timezone` | `Asia/Shanghai` | 调度时区 |
 | `run_at` | `08:30` | 每天运行时间，24 小时制 `HH:MM` |
 | `mode` | `basic` | `basic` 或 `advanced` |
@@ -492,7 +493,7 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 - **域名白名单**：基础模式只允许 `bing.com` / `rewards.bing.com` 及其子域；进阶模式还受 `allowed_hosts` 限制。
 - **高风险文字/路径拦截**：兑换、购买、支付、充值、礼品卡、设置、隐私、退出登录、删除账号、`/redeem`、`/shop`、`/checkout` 等。
 - **密码框不点击**。
-- **只允许导航回仪表盘**；点击后进入站外域名会自动返回或中止。
+- **只允许导航回任务页**；点击后进入站外域名会自动返回或中止。
 - **领取只匹配明确的“领取 / Claim”文字**，不匹配“兑换”。
 - **轮数、步数、时间上限**，避免无限循环。
 - **任务勾选只打开已选的卡片类型**；未勾选、仅进阶 AI 和需人工处理的卡片会跳过。
@@ -547,7 +548,7 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 - TOML 配置解析、环境变量 Key 回退、非法时间/模式、相对路径、调度器日期计算。
 - 初始化教程：首次显示、完成/跳过标记、损坏或旧版本标记重新显示、接口写入与非法动作拒绝、`/api/state` 不泄露 Key、首次运行暂缓自动调度；以及调度启动接口可选 `catch_up=false`、非法值被拒绝。
 - 开机自启与跑完退出：源码版/打包版启动命令生成、注册表登记与删除的幂等、路径不匹配检测、仅“调度成功”触发退出、手动运行与失败运行不退出、任务完成监听、配置写回，以及设置接口开关联动启动项。
-- 安全标签/链接拦截、域名判断、仪表盘 URL 判断、密码框拦截。
+- 安全标签/链接拦截、域名判断、任务页 URL 判断、密码框拦截。
 - LLM JSON 解析（普通 JSON、Markdown 围栏、坏 JSON）。
 - Agent 动作归一化与边界裁剪。
 - 本地 HTML 夹具上的任务扫描、领取扫描、测验识别、Bing 分页排除、隐藏单选框的 label 回退。
@@ -558,10 +559,10 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 - 单实例：先启动的进程持有命名互斥量时，第二个进程退出；第一个结束后可再次启动。
 - 托盘：图标资源、菜单状态文字、任务运行中/低功耗/调度的状态优先级、立即运行触发来源、运行前确认被拒时不启动任务、从托盘开启调度时关闭补跑、调度与低功耗开关的调用。
 - 控制台窗口：退出时只关闭本实例打开或聚焦过的窗口，不会误关其他 Rewards 标题窗口。
-- 基础模式离线集成：拦截请求并伪造仪表盘/搜索页，验证“扫描 → 打开任务 → 返回 → 领取”的完整流程。
+- 基础模式离线集成：拦截请求并伪造任务页/搜索页，验证“扫描 → 打开任务 → 返回 → 领取”的完整流程。
 - 进阶模式离线集成：启动一个本地假 OpenAI 兼容接口，验证模型观察元素、点击任务、答题、提交、finish 的完整循环，以及 Authorization 头和请求体。
 
-这些集成测试使用 `https://rewards.bing.com/dashboard` 的拦截响应和临时浏览器配置，不读取 `.browser-profile`，也不会访问线上账号。
+这些集成测试使用 `https://rewards.bing.com/earn` 的拦截响应和临时浏览器配置，不读取 `.browser-profile`，也不会访问线上账号。
 
 离线 UI 测试需要本机 Edge，会以 headless 方式启动；没有 Edge 时自动跳过。也可以单独跑：
 
@@ -655,7 +656,7 @@ Windows 的 Python 不自带 IANA 时区库，安装 `tzdata` 即可（已在 `r
 
 **扫描到 0 个任务**
 
-- 今天的每日任务可能已经完成；先手动看仪表盘确认。
+- 今天的每日任务可能已经完成；先手动看 Rewards 任务页确认。
 - 页面语言/地区不同，关键词可能不匹配；查看 `logs/rewards_bot.log` 和截图。
 - Rewards 页面可能改版，需要调整 `basic.py` 中的扫描规则。
 - 账号可能被限制或处于验证状态。
@@ -900,13 +901,13 @@ cd ..
 
 ```text
 文件名：Bing-reward-FREE-v1.0.1-win64.exe
-大小：60,449,616 字节
-SHA256：26968b23bedfe9fb3219c9f8e7ab7c8f7e2a540d361193c11e1bd5a3fdf3cbdc
+大小：60,452,291 字节
+SHA256：e2b8f9172ea55131af495d4a18fd0a05b315eb45ff041e6b50e95af4c9dd4d44
 ```
 
 > 源码包是构建这个 EXE 的同一份代码快照。EXE 由本机 PyInstaller 6.22.3 构建，不是 CI 产物；重新构建的二进制不会与官方附件逐字节一致，但源码、依赖清单与构建步骤都包含在源码包中。
 
-> **版本说明**：`v1.0.1` 新增「开机自启 + 每日定时成功跑完后自动退出」；失败运行会保留后台便于排查。`v1.0.0` 的附件仍保留在旧 Release 中，但不再推荐下载。
+> **版本说明**：`v1.0.1` 新增「开机自启 + 每日定时成功跑完后自动退出」，并把任务入口切换到新版 Rewards `/earn` 页面（旧 `/dashboard` 配置自动迁移）；失败运行会保留后台便于排查。`v1.0.0` 的附件仍保留在旧 Release 中，但不再推荐下载。
 
 ---
 
@@ -920,6 +921,6 @@ SHA256：26968b23bedfe9fb3219c9f8e7ab7c8f7e2a540d361193c11e1bd5a3fdf3cbdc
 
 ## English / English Summary
 
-**Bing-reward FREE** is a local-first Windows desktop assistant for Microsoft Rewards daily tasks. It reuses your local Edge session, opens the Rewards dashboard on a schedule, completes common quiz / poll / read cards with built-in heuristics, and claims only explicit “Claim” rewards. An optional advanced mode sends an indexed list of up to 140 interactive elements to DeepSeek (or any OpenAI-compatible endpoint) for step-by-step decisions, with domain and high-risk-text guards. An optional one-switch mode registers the app for the current Windows user's startup and exits the tray and backend after a successful scheduled run; manual runs and failed runs keep it alive. Everything runs on `127.0.0.1`; cookies, logs, screenshots and API keys stay on your machine. It is not affiliated with Microsoft, and automating Rewards may violate Microsoft's terms of service. Use at your own risk. Requires Windows 10/11 and Edge; the release EXE is unsigned.
+**Bing-reward FREE** is a local-first Windows desktop assistant for Microsoft Rewards daily tasks. It reuses your local Edge session, opens the Rewards earn page on a schedule, completes common quiz / poll / read cards with built-in heuristics, and claims only explicit “Claim” rewards. An optional advanced mode sends an indexed list of up to 140 interactive elements to DeepSeek (or any OpenAI-compatible endpoint) for step-by-step decisions, with domain and high-risk-text guards. An optional one-switch mode registers the app for the current Windows user's startup and exits the tray and backend after a successful scheduled run; manual runs and failed runs keep it alive. Everything runs on `127.0.0.1`; cookies, logs, screenshots and API keys stay on your machine. It is not affiliated with Microsoft, and automating Rewards may violate Microsoft's terms of service. Use at your own risk. Requires Windows 10/11 and Edge; the release EXE is unsigned.
 
 <img src="assets/footer.svg" alt="ShirakawaFM / 白川方明" width="100%" />

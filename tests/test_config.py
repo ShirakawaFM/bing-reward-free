@@ -23,8 +23,29 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(cfg.general.browser_channel, "msedge")
         self.assertEqual(cfg.general.run_hour_minute, (8, 30))
         self.assertTrue(cfg.general.catch_up)
+        self.assertEqual(cfg.general.url, "https://rewards.bing.com/earn")
         self.assertFalse(cfg.basic.search_enabled)
         self.assertFalse(cfg.advanced.vision_supported)
+
+    def test_legacy_dashboard_url_migrates_to_earn(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "legacy.toml"
+            path.write_text(
+                '[general]\nurl = "https://rewards.bing.com/dashboard"\n',
+                encoding="utf-8",
+            )
+            cfg = load_config(path)
+        self.assertEqual(cfg.general.url, "https://rewards.bing.com/earn")
+
+    def test_custom_url_is_not_rewritten(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "custom.toml"
+            path.write_text(
+                '[general]\nurl = "https://rewards.bing.com/earn?region=cn"\n',
+                encoding="utf-8",
+            )
+            cfg = load_config(path)
+        self.assertEqual(cfg.general.url, "https://rewards.bing.com/earn?region=cn")
 
     def test_env_api_key_fallback(self) -> None:
         with patch.dict(os.environ, {"DEEPSEEK_API_KEY": "sk-test"}):

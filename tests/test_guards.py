@@ -3,7 +3,12 @@ from __future__ import annotations
 import unittest
 
 from rewards_bot.agent import RewardsAgent
-from rewards_bot.dom import click_block_reason, host_allowed, is_dashboard_url
+from rewards_bot.dom import (
+    click_block_reason,
+    host_allowed,
+    is_dashboard_url,
+    is_rewards_home_url,
+)
 from rewards_bot.llm import LLMClient, LLMError
 
 HOSTS = ["rewards.bing.com", "bing.com", "www.bing.com", "cn.bing.com"]
@@ -54,6 +59,14 @@ class GuardTests(unittest.TestCase):
         self.assertFalse(
             is_dashboard_url("https://rewards.bing.com/redeem", "https://rewards.bing.com/dashboard")
         )
+
+    def test_rewards_home_url_accepts_earn_and_dashboard(self) -> None:
+        base = "https://rewards.bing.com/earn"
+        self.assertTrue(is_rewards_home_url("https://rewards.bing.com/earn", base))
+        self.assertTrue(is_rewards_home_url("https://rewards.bing.com/earn?x=1", base))
+        self.assertTrue(is_rewards_home_url("https://rewards.bing.com/dashboard", base))
+        self.assertFalse(is_rewards_home_url("https://rewards.bing.com/redeem", base))
+        self.assertFalse(is_rewards_home_url("https://example.com/earn", base))
 
 
 class LLMParseTests(unittest.TestCase):

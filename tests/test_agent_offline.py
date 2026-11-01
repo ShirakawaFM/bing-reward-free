@@ -92,8 +92,8 @@ class FakeLLMServer:
         step = len(self.actions) + 1
 
         if step == 1:
-            if "/dashboard" not in url:
-                raise AssertionError(f"第一步应在仪表盘，实际：{url}")
+            if "/earn" not in url:
+                raise AssertionError(f"第一步应在任务页，实际：{url}")
             action = {
                 "action": "click",
                 "id": self._find(elements, "开始测验")["id"],
@@ -146,7 +146,7 @@ class AgentOfflineTests(unittest.TestCase):
         finally:
             cls._pw.stop()
 
-    def test_agent_navigates_dashboard_and_quiz(self) -> None:
+    def test_agent_navigates_earn_page_and_quiz(self) -> None:
         llm = FakeLLMServer()
         llm.start()
         try:
@@ -155,7 +155,7 @@ class AgentOfflineTests(unittest.TestCase):
                 cfg_path.write_text(
                     f"""
 [general]
-url = "https://rewards.bing.com/dashboard"
+url = "https://rewards.bing.com/earn"
 timezone = "Asia/Shanghai"
 run_at = "08:30"
 mode = "advanced"
@@ -192,7 +192,7 @@ allowed_hosts = ["rewards.bing.com", "bing.com", "cn.bing.com"]
                 try:
                     def handle(route) -> None:
                         url = route.request.url
-                        if url.startswith("https://rewards.bing.com/dashboard"):
+                        if url.startswith("https://rewards.bing.com/earn"):
                             route.fulfill(
                                 status=200,
                                 content_type="text/html; charset=utf-8",
@@ -209,7 +209,7 @@ allowed_hosts = ["rewards.bing.com", "bing.com", "cn.bing.com"]
 
                     context.route("**/*", handle)
                     page = context.new_page()
-                    page.goto("https://rewards.bing.com/dashboard")
+                    page.goto("https://rewards.bing.com/earn")
 
                     class FakeSession:
                         """只实现 Agent 需要的会话接口，避免依赖真实浏览器的持久化配置。"""
@@ -223,7 +223,7 @@ allowed_hosts = ["rewards.bing.com", "bing.com", "cn.bing.com"]
                             return self.page
 
                         def open_dashboard(self):
-                            self.page.goto("https://rewards.bing.com/dashboard")
+                            self.page.goto("https://rewards.bing.com/earn")
                             return self.page
 
                         def is_login_page(self) -> bool:

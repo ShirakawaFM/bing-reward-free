@@ -560,7 +560,7 @@ export default function Settings({
             tone="sky"
             kicker="BASIC MODE"
             title="基础任务"
-            description="扫描仪表盘任务卡片，完成问答并领取可领取的奖励。"
+            description="扫描 Rewards 任务页卡片，完成问答并领取可领取的奖励。"
           >
             <div className="field-grid">
               <Field label="每轮任务上限" hint="1 – 30，越小越保守">
