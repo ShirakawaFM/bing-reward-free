@@ -8,14 +8,7 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 
 简体中文 · [English](#english--english-summary)
 
-[![Version](https://img.shields.io/badge/version-1.0.0-5EEAD4?style=flat-square&logo=github&logoColor=white)](https://github.com/ShirakawaFM/bing-reward-free/releases)
-[![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE)
-[![Windows](https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
-[![Playwright](https://img.shields.io/badge/Playwright-1.64-2EAD33?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev/)
-[![DeepSeek](https://img.shields.io/badge/DeepSeek-%E5%8F%AF%E9%80%89-4D6BFE?style=flat-square)](https://www.deepseek.com/)
-[![Stars](https://img.shields.io/github/stars/ShirakawaFM/bing-reward-free?style=social)](https://github.com/ShirakawaFM/bing-reward-free/stargazers)
+[![Version](https://img.shields.io/badge/version-1.0.0-5EEAD4?style=flat-square&logo=github&logoColor=white)](https://github.com/ShirakawaFM/bing-reward-free/releases) [![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE) [![Windows](https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows) [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/) [![Playwright](https://img.shields.io/badge/Playwright-1.64-2EAD33?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev/) [![DeepSeek](https://img.shields.io/badge/DeepSeek-%E5%8F%AF%E9%80%89-4D6BFE?style=flat-square)](https://www.deepseek.com/) [![Stars](https://img.shields.io/github/stars/ShirakawaFM/bing-reward-free?style=social)](https://github.com/ShirakawaFM/bing-reward-free/stargazers)
 
 </div>
 
