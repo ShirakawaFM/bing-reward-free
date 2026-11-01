@@ -8,7 +8,7 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 
 简体中文 · [English](#english--english-summary)
 
-[![Version](https://img.shields.io/badge/version-1.0.1-5EEAD4?style=flat-square&logo=github&logoColor=white)](https://github.com/ShirakawaFM/bing-reward-free/releases) [![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE) [![Windows](https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows) [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/) [![Playwright](https://img.shields.io/badge/Playwright-1.64-2EAD33?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev/) [![DeepSeek](https://img.shields.io/badge/DeepSeek-%E5%8F%AF%E9%80%89-4D6BFE?style=flat-square)](https://www.deepseek.com/) [![Stars](https://img.shields.io/github/stars/ShirakawaFM/bing-reward-free?style=social&label=Stars)](https://github.com/ShirakawaFM/bing-reward-free/stargazers)
+[![Version](https://img.shields.io/badge/version-1.1.0-5EEAD4?style=flat-square&logo=github&logoColor=white)](https://github.com/ShirakawaFM/bing-reward-free/releases) [![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE) [![Windows](https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows) [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/) [![Playwright](https://img.shields.io/badge/Playwright-1.64-2EAD33?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev/) [![DeepSeek](https://img.shields.io/badge/DeepSeek-%E5%8F%AF%E9%80%89-4D6BFE?style=flat-square)](https://www.deepseek.com/) [![Stars](https://img.shields.io/github/stars/ShirakawaFM/bing-reward-free?style=social&label=Stars)](https://github.com/ShirakawaFM/bing-reward-free/stargazers)
 
 作者：**ShirakawaFM / 白川方明**
 
@@ -18,7 +18,7 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 >
 > 开发测试期间曾打开过真实的每日任务链接，这类链接**仅打开就可能被 Rewards 计为已完成并发放积分**；还出现过一次隔离测试配置打开仪表盘并点击领取的情况。如果你不希望账号状态被改变，请不要运行本程序。
 >
-> 首页积分是**本地估算**，不读取账号余额，也不请求积分接口。所有配置、登录态、日志和截图都留在本机；本项目不会上传你的账号信息。
+> 首页积分有两套数字：**预估区间是本地估算**，不碰账号；**积分证据是从任务页 DOM 里读到的真实余额与 `+N`**，只在运行中读取当前页面，不请求任何积分接口。两种情况都不会上传你的账号信息，配置、登录态、日志和截图全部留在本机。
 
 ---
 
@@ -26,9 +26,9 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 
 | 包 | 内容 | 适合谁 | 下载 |
 | --- | --- | --- | --- |
-| **Windows 成品版** | 单文件 EXE，内置后端、React 控制台与 Playwright 驱动 | 不想装 Python，双击就用 | [Bing-reward-FREE-v1.0.1-win64.exe](https://github.com/ShirakawaFM/bing-reward-free/releases/download/v1.0.1/Bing-reward-FREE-v1.0.1-win64.exe) |
-| **原版代码** | 完整源码、构建脚本、测试与文档，不含登录态和配置 | 想阅读、修改或自行构建 | [Bing-reward-FREE-v1.0.1-source.zip](https://github.com/ShirakawaFM/bing-reward-free/releases/download/v1.0.1/Bing-reward-FREE-v1.0.1-source.zip) |
-| **校验和** | 上面两个文件的 SHA256 | 下载后核对完整性 | [SHA256SUMS.txt](https://github.com/ShirakawaFM/bing-reward-free/releases/download/v1.0.1/SHA256SUMS.txt) |
+| **Windows 成品版** | 单文件 EXE，内置后端、React 控制台与 Playwright 驱动 | 不想装 Python，双击就用 | [Bing-reward-FREE-v1.1.0-win64.exe](https://github.com/ShirakawaFM/bing-reward-free/releases/download/v1.1.0/Bing-reward-FREE-v1.1.0-win64.exe) |
+| **原版代码** | 完整源码、构建脚本、测试与文档，不含登录态和配置 | 想阅读、修改或自行构建 | [Bing-reward-FREE-v1.1.0-source.zip](https://github.com/ShirakawaFM/bing-reward-free/releases/download/v1.1.0/Bing-reward-FREE-v1.1.0-source.zip) |
+| **校验和** | 上面两个文件的 SHA256 | 下载后核对完整性 | [SHA256SUMS.txt](https://github.com/ShirakawaFM/bing-reward-free/releases/download/v1.1.0/SHA256SUMS.txt) |
 
 > EXE 未签名，Windows SmartScreen 可能提示“未知发布者”；仅在确认来源可信时选择“更多信息 → 仍要运行”。也可以直接 `git clone` 本仓库。
 >
@@ -135,6 +135,7 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 - **实时日志与运行截图**：按级别筛选/搜索日志，按任务批次查看关键页面截图。
 - **任务清单勾选**：设置页按分组列出 23 种任务类型。11 种基础卡片可逐项勾选；4 种仅进阶 AI、6 种需人工处理的类型会显示但保持锁定。没勾选的卡片不会被打开。
 - **首页积分预估**：按当前任务勾选、搜索和自动领取开关，用大字给出每日 / 每周的本地估算区间；同时显示还有哪些任务未启用、全部开启后能多拿多少。点击“还有提升空间”会直接跳到设置里未勾选的选项，并滚动、高亮对应卡片。
+- **积分证据链**：运行时会从真实页面 DOM 里读余额和任务卡片上的 `+N`，并在每个任务前后各留一张截图。只有「任务后余额 > 任务前余额」且头尾截图齐全，这条任务才记为**已确认**；读不到数字就老实标「未确认」，绝不用本地估算补齐。总览页据此给出今日已确认积分、未确认任务数和每轮结算明细，截图可直接跳到截图库核对。
 - **任务浏览器专属标识**：程序自动打开的 Edge 任务窗口会换成独立的闪电/仪表盘图标，并在任务栏按钮上叠加徽标；你自己已经打开的 Edge 窗口不会被改动。
 - **低功耗挂机**：切换到 Windows 节能计划、把自身降到空闲优先级并启用 EcoQoS、阻止系统空闲休眠，目标连续待命 7 天；期间任务强制无头运行，只保留一个 Rewards Pilot 实例。可选清理仅限你勾选的白名单应用。
 - 基础模式自动扫描 Rewards 任务页（`/earn`）的卡片，跳过“已完成 / 兑换 / 购买 / 设置 / 隐私 / 站外链接”等高风险内容。
@@ -142,6 +143,7 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 - 对“打开即完成”的 Bing 搜索/阅读类任务，停留数秒后返回任务页。
 - 只点击文字明确的“领取 / 领取奖励 / Claim”按钮，绝不点击“兑换 / Redeem”。
 - 可选自动搜索（默认关闭，更容易触发风控）。
+- **两级防检测（`[stealth]`）**：基础模式用本地规则给每次查询加 1–2 个字符的偏移、按右偏分布采样间隔、逐字输入；强力模式每轮只调用一次大模型规划整轮人类行为（带磁盘缓存与自动降级），把 token 压到最低。详见 [`[stealth]`](#stealth防检测)。
 - 进阶模式：DOM 元素编号 + JSON 动作，最多 140 个可见交互元素，防止模型猜测不存在的元素。
 - 完整的本地日志和失败截图，便于排查页面改版、登录失效、验证码等问题。
 - API Key 只写入本机配置文件；界面接口只返回“是否已配置”，日志不记录 Key。
@@ -430,6 +432,56 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 
 安全相关的配置不要随意放大：`max_steps`、`max_minutes` 越大，模型误操作的机会越多。
 
+### `[stealth]`（防检测）
+
+两种强度，**可以只开其中一个，也可以都关掉完全回到原始行为**。设置页「防检测」区块提供同样的开关。
+
+| 配置项 | 默认 | 说明 |
+| --- | --- | --- |
+| `basic_enabled` | `true` | 基础防检测：查询字符偏移 + 右偏节奏 + 逐字输入（本地规则，零费用） |
+| `strong_enabled` | `false` | 强力防检测：一次大模型调用规划整轮人类行为，带磁盘缓存 |
+| `query_jitter` | `2` | 每次查询最多改几个字符：`1` 最保守、`2` 默认、`3` 变化更明显 |
+| `typing_enabled` | `true` | 是否逐字输入搜索词；关掉后退回直接跳转搜索 URL（扰动仍生效） |
+| `mouse_jitter` | `true` | 点击前移动鼠标、停留时随机漂移 |
+| `break_probability` | `0.12` | 偶发长停顿概率（`0`–`0.9`），约每 8 次搜索多停一次 |
+| `click_result_probability` | `0.15` | 点开一条搜索结果再返回的概率（`0`–`1`），`0` 表示只滚动/悬停 |
+| `plan_max_tokens` | `700` | 强力模式单次剧本的 `max_tokens` 上限（`200`–`2000`） |
+| `plan_cache_hours` | `12` | 剧本缓存有效期（小时），`0` 表示每次都重新询问模型 |
+| `strong_max_page_text` | `1200` | 强力模式下每步发给模型的页面正文上限 |
+| `strong_max_elements` | `45` | 强力模式下每步发给模型的元素条数上限 |
+
+#### 基础防检测（`basic_enabled`）
+
+纯本地规则，不产生任何额外网络请求或费用，建议常开：
+
+- **查询偏移**：每次搜索前把查询改 1–2 个字符——同音/形近汉字替换（的↔得、在↔再、已↔己……）、
+  英文相邻字母换位、QWERTY 邻键笔误、插空格或重复一个字符。语义保持高度一致，
+  但每次发出去的 URL 都不完全相同。
+- **节奏右偏**：等待时长不再是 `uniform(min, max)`，而是右偏采样（多数偏短、偶尔明显拉长），
+  并带 `break_probability` 的“走神”停顿；每次采样结果都不一样。长停顿最多放大到 `search_delay_max` 的 2.2 倍。
+- **人类化输入**：先回 Bing 首页、把鼠标移到搜索框、逐字符敲键（含偶发笔误 + 退格），
+  结果页分段滚动、随机悬停，而不是一次性 `goto` 搜索结果 URL。
+- 任务卡片与领取按钮的点击也会先移动鼠标再点，任务页停留改用同一套右偏采样。
+
+#### 强力防检测（`strong_enabled`）
+
+用大模型的“思考”能力规划整轮行为，同时把 token 压到最低：
+
+1. **整轮只调用一次模型**，一次产出 N 条 `{q, dwell, scroll, hover, click}` 剧本，
+   而不是每次搜索都问一次；`plan_max_tokens` 默认 700 就足够 20 条搜索。
+2. **结果缓存**到 `state/stealth/plan-cache.json`（默认 12 小时）。同一天重复运行直接命中缓存，
+   token 消耗为 0；命中后仍会用本地抖动重新采样停留时间与查询偏移，不会跑出完全相同的时序。
+3. **失败自动降级**：没有 API Key、接口报错、模型输出不可解析时，自动退回本地人类行为模拟并记录原因，
+   不会中断这一轮任务。
+4. **每步观察压缩**：进阶模式下 `strong_max_page_text` / `strong_max_elements` 控制送给模型的
+   页面正文与元素数量，减少每步输入 token。
+
+每轮的计划来源、是否命中缓存、token 用量都会写进日志，同时落盘到
+`state/stealth/last-plan.json`，方便核对“这一轮到底花了多少 token”。
+
+> 防检测只是降低被识别的概率，不等于不会被识别。搜索积分本身仍可能触发 Rewards 风控，
+> 请自行评估是否开启 `search_enabled`。
+
 ---
 
 ## 每日定时：三种方式
@@ -569,6 +621,7 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 ```bat
 .venv\Scripts\python.exe -m unittest tests.test_offline_ui -v
 .venv\Scripts\python.exe -m unittest tests.test_basic_offline -v
+.venv\Scripts\python.exe -m unittest tests.test_stealth -v
 .venv\Scripts\python.exe -m unittest tests.test_agent_offline -v
 .venv\Scripts\python.exe -m unittest tests.test_tasks_catalog -v
 .venv\Scripts\python.exe -m unittest tests.test_onboarding -v
@@ -748,6 +801,7 @@ bing-rewards-bot/
 │  ├─ dom.py                # 元素观察/编号、安全护栏、URL 判断
 │  ├─ llm.py                # OpenAI 兼容接口、重试、JSON 解析
 │  ├─ agent.py              # 进阶模式循环与动作执行
+│  ├─ stealth.py            # 防检测：查询偏移、右偏节奏、逐字输入、大模型行为剧本与缓存
 │  ├─ runner.py             # 一次完整运行的编排
 │  ├─ scheduler.py          # 每日调度与补跑
 │  ├─ window_branding.py    # 任务浏览器专属窗口图标与任务栏徽标
@@ -782,6 +836,7 @@ bing-rewards-bot/
 │  ├─ test_onboarding.py    # 教程状态、接口与首次运行安全行为
 │  ├─ test_autostart.py     # 开机自启、启动命令与跑完自动退出（模拟注册表）
 │  ├─ test_tasks_catalog.py # 任务目录、归类与配置校验
+│  ├─ test_stealth.py       # 防检测：查询偏移、节奏采样、剧本缓存与降级
 │  ├─ test_window_branding.py # 浏览器图标资源与窗口筛选
 │  ├─ test_power_mode.py    # 电源计划、恢复、白名单清理（模拟命令）
 │  ├─ test_single_instance.py
@@ -893,21 +948,21 @@ cd ..
 
 | 附件 | 说明 |
 | --- | --- |
-| `Bing-reward-FREE-v1.0.1-win64.exe` | Windows 10/11 单文件成品。内置 Python 后端、`web/dist` 前端和 Playwright 驱动；需要系统 Edge，不内置浏览器 |
-| `Bing-reward-FREE-v1.0.1-source.zip` | 由 `v1.0.1` 提交的 Git 树直接导出的源码包，包含前端源码与构建产物、测试与文档；不包含 `config.toml`、`.browser-profile`、`state/`、`logs/` 或任何 Key |
+| `Bing-reward-FREE-v1.1.0-win64.exe` | Windows 10/11 单文件成品。内置 Python 后端、`web/dist` 前端和 Playwright 驱动；需要系统 Edge，不内置浏览器 |
+| `Bing-reward-FREE-v1.1.0-source.zip` | 由 `v1.1.0` 提交的 Git 树直接导出的源码包，包含前端源码与构建产物、测试与文档；不包含 `config.toml`、`.browser-profile`、`state/`、`logs/` 或任何 Key |
 | `SHA256SUMS.txt` | 两个附件的 SHA256，下载后可用 `certutil -hashfile <文件> SHA256` 核对 |
 
 本版 EXE 信息：
 
 ```text
-文件名：Bing-reward-FREE-v1.0.1-win64.exe
-大小：60,452,291 字节
-SHA256：e2b8f9172ea55131af495d4a18fd0a05b315eb45ff041e6b50e95af4c9dd4d44
+文件名：Bing-reward-FREE-v1.1.0-win64.exe
+大小：60,515,353 字节
+SHA256：bfe452876767cfc2605eb0ad3afc1b771db361c9355788928bb89931614880ab
 ```
 
 > 源码包是构建这个 EXE 的同一份代码快照。EXE 由本机 PyInstaller 6.22.3 构建，不是 CI 产物；重新构建的二进制不会与官方附件逐字节一致，但源码、依赖清单与构建步骤都包含在源码包中。
 
-> **版本说明**：`v1.0.1` 新增「开机自启 + 每日定时成功跑完后自动退出」，并把任务入口切换到新版 Rewards `/earn` 页面（旧 `/dashboard` 配置自动迁移）；失败运行会保留后台便于排查。`v1.0.0` 的附件仍保留在旧 Release 中，但不再推荐下载。
+> **版本说明**：`v1.1.0` 新增「两级防检测」与「积分证据链」——前者用本地规则给每次查询加轻微偏移、按右偏分布采样节奏并逐字输入，强力档再让大模型一轮只调一次、产出整轮人类行为剧本（带盘缓存与自动降级）；后者从真实页面读取余额与任务 `+N`，任务前后各留截图，只有余额确实增长且截图齐全才记为已确认，读不到就标未确认。`v1.0.1` 是「开机自启 + 每日定时成功跑完后自动退出」，并把任务入口切换到新版 Rewards `/earn` 页面。旧版本附件仍保留在历史 Release 中，但不再推荐下载。
 
 ---
 

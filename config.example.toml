@@ -79,3 +79,44 @@ timeout_seconds = 90
 
 # 大模型模式允许访问的域名，防止误点站外链接。
 allowed_hosts = ["rewards.bing.com", "bing.com", "www.bing.com", "cn.bing.com"]
+
+[stealth]
+# ---------------- 防检测 ----------------
+# basic_enabled  = 基础防检测（本地规则，零费用，建议常开）
+#   · 搜索词随机偏移：每次改 1–2 个字符（同音/形近汉字、英文相邻字母换位、键盘邻键笔误），
+#     语义保持一致，但每次发出去的查询都不完全相同；
+#   · 节奏右偏采样：间隔不再是均匀随机，多数偏短、偶尔明显拉长，每次都不一样；
+#   · 逐字输入 + 真实鼠标移动 + 分段滚动，而不是直接跳转搜索结果 URL。
+basic_enabled = true
+
+# strong_enabled = 强力防检测（调用一次大模型，规划整轮“人类操作剧本”）
+#   · 一次调用产出每条搜索的停留时长、滚动次数、是否悬停/点开结果，整轮只花一次 token；
+#   · 结果缓存到 state/stealth/plan-cache.json，同一天重复运行不再产生费用；
+#   · 没有 API Key 或调用失败时自动降级为本地人类行为模拟，不会中断任务。
+# 两者总开关都关闭时，完全保留原始行为（uniform 随机间隔 + 直接跳 URL）。
+strong_enabled = false
+
+# 每次查询最多改几个字符：1 = 最保守，2 = 默认，3 = 变化更明显。
+query_jitter = 2
+
+# 是否逐字输入搜索词（关掉会退回“直接跳转搜索 URL”，扰动仍然生效）。
+typing_enabled = true
+
+# 是否在点击前移动鼠标、停留时随机漂移。
+mouse_jitter = true
+
+# 偶发长停顿概率（0 – 0.9）。0.12 表示大约每 8 次搜索有 1 次会明显多停留一会儿。
+break_probability = 0.12
+
+# 点开一条搜索结果再返回的概率（0 – 1）。0 表示只滚动和悬停，不点结果。
+click_result_probability = 0.15
+
+# 强力模式单次剧本调用的 max_tokens 上限（200 – 2000）。越小越省，700 足够 20 条搜索。
+plan_max_tokens = 700
+
+# 剧本缓存有效期（小时）。0 表示每次都重新问模型。
+plan_cache_hours = 12
+
+# 强力模式下每步发给模型的页面正文/元素上限，用来压低 token 消耗。
+strong_max_page_text = 1200
+strong_max_elements = 45

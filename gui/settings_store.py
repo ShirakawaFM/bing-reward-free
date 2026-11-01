@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import logging
 import shutil
@@ -49,6 +49,19 @@ max_steps = 40
 max_minutes = 10
 timeout_seconds = 90
 allowed_hosts = ["rewards.bing.com", "bing.com", "www.bing.com", "cn.bing.com"]
+
+[stealth]
+basic_enabled = true
+strong_enabled = false
+query_jitter = 2
+typing_enabled = true
+mouse_jitter = true
+break_probability = 0.12
+click_result_probability = 0.15
+plan_max_tokens = 700
+plan_cache_hours = 12
+strong_max_page_text = 1200
+strong_max_elements = 45
 """
 
 
@@ -84,18 +97,20 @@ class SettingsStore:
         with self._lock:
             self.ensure()
             try:
-                doc = tomlkit.parse(self.config_path.read_text(encoding="utf-8"))
+                doc = tomlkit.parse(self.config_path.read_text(encoding="utf-8-sig"))
             except (OSError, tomlkit.exceptions.ParseError) as exc:
                 raise SettingsError(f"读取配置失败：{exc}") from exc
 
             general = _table(doc, "general")
             basic = _table(doc, "basic")
             advanced = _table(doc, "advanced")
+            stealth = _table(doc, "stealth")
 
             g = payload.get("general") or {}
             b = payload.get("basic") or {}
             a = payload.get("advanced") or {}
-            if not all(isinstance(item, dict) for item in (g, b, a)):
+            s = payload.get("stealth") or {}
+            if not all(isinstance(item, dict) for item in (g, b, a, s)):
                 raise SettingsError("设置分组必须是 JSON 对象。")
 
             _set_str(g, "run_at", general, "run_at")
@@ -120,6 +135,16 @@ class SettingsStore:
             _set_float(a, "temperature", advanced, "temperature")
             _set_int(a, "max_steps", advanced, "max_steps")
             _set_int(a, "max_minutes", advanced, "max_minutes")
+
+            _set_bool(s, "basic_enabled", stealth, "basic_enabled")
+            _set_bool(s, "strong_enabled", stealth, "strong_enabled")
+            _set_int(s, "query_jitter", stealth, "query_jitter")
+            _set_bool(s, "typing_enabled", stealth, "typing_enabled")
+            _set_bool(s, "mouse_jitter", stealth, "mouse_jitter")
+            _set_float(s, "break_probability", stealth, "break_probability")
+            _set_float(s, "click_result_probability", stealth, "click_result_probability")
+            _set_int(s, "plan_max_tokens", stealth, "plan_max_tokens")
+            _set_float(s, "plan_cache_hours", stealth, "plan_cache_hours")
 
             clear_key = _bool_value(a.get("clear_api_key", False), "clear_api_key")
             if "api_key" in a:
@@ -187,6 +212,18 @@ class SettingsStore:
                 "max_steps": cfg.advanced.max_steps,
                 "max_minutes": cfg.advanced.max_minutes,
                 "api_key_set": bool(cfg.advanced.api_key),
+            },
+            "stealth": {
+                "basic_enabled": cfg.stealth.basic_enabled,
+                "strong_enabled": cfg.stealth.strong_enabled,
+                "query_jitter": cfg.stealth.query_jitter,
+                "typing_enabled": cfg.stealth.typing_enabled,
+                "mouse_jitter": cfg.stealth.mouse_jitter,
+                "break_probability": cfg.stealth.break_probability,
+                "click_result_probability": cfg.stealth.click_result_probability,
+                "plan_max_tokens": cfg.stealth.plan_max_tokens,
+                "plan_cache_hours": cfg.stealth.plan_cache_hours,
+                "enabled": cfg.stealth.enabled,
             },
         }
 

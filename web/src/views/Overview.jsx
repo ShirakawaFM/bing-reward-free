@@ -23,6 +23,7 @@ import { Segmented, Switch } from "../components/ui";
 import Orbit from "../components/Orbit";
 import LogConsole from "../components/LogConsole";
 import PointsForecast from "../components/PointsForecast";
+import PointsEvidence from "../components/PointsEvidence";
 import { ShotThumb } from "../components/Shots";
 import {
   durationBetween,
@@ -244,6 +245,12 @@ export default function Overview({
         forecast={summary.points_forecast}
         mode={mode}
         onImprove={() => onNavigate("settings", { focus: "tasks" })}
+      />
+
+      <PointsEvidence
+        points={state.points}
+        running={running}
+        onOpenGallery={() => onNavigate("gallery")}
       />
 
       <div className="stat-grid">

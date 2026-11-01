@@ -11,6 +11,7 @@ from rewards_bot.basic import (
     QUIZ_DETECT_JS,
     SCAN_TASKS_JS,
 )
+from rewards_bot.points import POINTS_SNAPSHOT_JS
 
 
 class OfflineUITests(unittest.TestCase):
@@ -125,6 +126,73 @@ class OfflineUITests(unittest.TestCase):
         )
         text = self.page.evaluate(MARK_ANSWER_JS)
         self.assertEqual(text, "选项 A")
+
+    def test_points_snapshot_reads_balance_and_remaining_badges(self) -> None:
+        self._load(
+            "<header role='banner'><div class='balance'>"
+            "<p>1,234</p>"
+            "<img alt='OMR medal' width='16' height='16' "
+            "src='data:image/gif;base64,R0lGODlhAQABAAAAACw='>"
+            "</div></header>"
+            "<main>"
+            "<mee-rewards-daily-set-section>"
+            "<mee-card><a href='https://www.bing.com/search?q=one'>"
+            "<p>+10</p><span>每日搜索</span></a></mee-card>"
+            "<mee-card><a href='https://www.bing.com/search?q=two'>"
+            "<p>+20</p><span>每日测验</span></a></mee-card>"
+            "</mee-rewards-daily-set-section>"
+            "<mee-rewards-more-activities-section>"
+            "<mee-card><a href='https://cn.bing.com/search?q=three'>"
+            "<p>+30</p><span>更多活动</span></a></mee-card>"
+            "</mee-rewards-more-activities-section>"
+            "</main>"
+        )
+        snapshot = self.page.evaluate(POINTS_SNAPSHOT_JS)
+        self.assertIsNotNone(snapshot["balance"], snapshot)
+        self.assertEqual(snapshot["balance"]["value"], 1234)
+        self.assertIsNotNone(snapshot["remaining"], snapshot)
+        self.assertEqual(snapshot["remaining"]["points"], 60)
+        self.assertEqual(snapshot["remaining"]["task_count"], 3)
+        self.assertEqual(
+            snapshot["remaining"]["sections"], {"daily": 30, "more": 30}
+        )
+
+    def test_points_snapshot_rejects_balance_without_context(self) -> None:
+        # 卡片里的数字、没有 header/奖章/标签上下文的数字都不算账户余额。
+        self._load(
+            "<main>"
+            "<div class='task-card'><p>1,234</p><button>查看</button></div>"
+            "<div class='points'>999</div>"
+            "</main>"
+        )
+        snapshot = self.page.evaluate(POINTS_SNAPSHOT_JS)
+        self.assertIsNone(snapshot["balance"], snapshot)
+        self.assertEqual(snapshot["balance_candidates"], 0)
+        self.assertIsNone(snapshot["remaining"])
+
+    def test_points_snapshot_ignores_completed_and_redeem_cards(self) -> None:
+        self._load(
+            "<header role='banner'><div class='balance'>"
+            "<p>500</p>"
+            "<img alt='OMR medal' width='16' height='16' "
+            "src='data:image/gif;base64,R0lGODlhAQABAAAAACw='>"
+            "</div></header>"
+            "<main><section id='dailyset'>"
+            "<mee-card><a href='https://www.bing.com/search?q=valid'>"
+            "<p>+10</p><span>每日搜索</span></a></mee-card>"
+            "<mee-card><a href='https://www.bing.com/search?q=done'>"
+            "<p>+10</p><span>每日任务 已完成</span></a></mee-card>"
+            "<mee-card><a href='https://rewards.bing.com/redeem/1'>"
+            "<p>+500</p><span>兑换奖励</span></a></mee-card>"
+            "<mee-card><a href='https://www.bing.com/shop?q=1'>"
+            "<p>+300</p><span>购物返现</span></a></mee-card>"
+            "</section></main>"
+        )
+        snapshot = self.page.evaluate(POINTS_SNAPSHOT_JS)
+        self.assertIsNotNone(snapshot["balance"], snapshot)
+        self.assertEqual(snapshot["balance"]["value"], 500)
+        self.assertEqual(snapshot["remaining"]["points"], 10)
+        self.assertEqual(snapshot["remaining"]["task_count"], 1)
 
 
 if __name__ == "__main__":

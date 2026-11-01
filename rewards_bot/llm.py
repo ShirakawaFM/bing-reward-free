@@ -19,7 +19,11 @@ class LLMError(RuntimeError):
 class LLMClient:
     """OpenAI 兼容 Chat Completions 客户端，默认用于 DeepSeek。"""
 
-    def __init__(self, cfg: AdvancedConfig) -> None:
+    def __init__(
+        self,
+        cfg: AdvancedConfig,
+        max_tokens: int = 1000,
+    ) -> None:
         if not cfg.api_key:
             raise LLMError(
                 "进阶模式未配置 API Key。请在 config.toml 的 [advanced].api_key 填写，"
@@ -27,6 +31,8 @@ class LLMClient:
             )
         self.cfg = cfg
         self.log = logging.getLogger("rewards_bot.llm")
+        self.max_tokens = max(64, int(max_tokens))
+        self.last_usage: dict[str, Any] = {}
         self._http = requests.Session()
         self._http.headers.update(
             {
@@ -52,11 +58,12 @@ class LLMClient:
         screenshot_path: Path | None = None,
     ) -> str:
         outgoing = self._with_screenshot(messages, screenshot_path)
+        self.last_usage = {}
         payload: dict[str, Any] = {
             "model": self.cfg.model,
             "messages": outgoing,
             "temperature": self.cfg.temperature,
-            "max_tokens": 1000,
+            "max_tokens": self.max_tokens,
             "stream": False,
             "response_format": {"type": "json_object"},
         }
@@ -88,6 +95,7 @@ class LLMClient:
                 data = response.json()
                 usage = data.get("usage") or {}
                 if usage:
+                    self.last_usage = dict(usage)
                     self.log.debug(
                         "token 用量：prompt=%s completion=%s total=%s",
                         usage.get("prompt_tokens"),

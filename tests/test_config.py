@@ -27,6 +27,17 @@ class ConfigTests(unittest.TestCase):
         self.assertFalse(cfg.basic.search_enabled)
         self.assertFalse(cfg.advanced.vision_supported)
 
+    def test_config_with_utf8_bom_loads(self) -> None:
+        """记事本保存的 UTF-8 BOM 配置不应导致启动失败。"""
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "bom.toml"
+            path.write_bytes(
+                b"\xef\xbb\xbf" + '[general]\nrun_at = "07:15"\n'.encode("utf-8")
+            )
+            cfg = load_config(path)
+        self.assertEqual(cfg.general.run_at, "07:15")
+
     def test_legacy_dashboard_url_migrates_to_earn(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "legacy.toml"

@@ -1,16 +1,19 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import logging
 import random
-import time
 from pathlib import Path
-from urllib.parse import quote_plus, urlparse
+from typing import TYPE_CHECKING
+from urllib.parse import urlparse
 
 from playwright.sync_api import Error as PlaywrightError
 
 from .browser import BrowserSession, LoginRequired
 from .config import AppConfig
 from .dom import host_allowed, is_rewards_home_url
+
+if TYPE_CHECKING:
+    from .points import PointsTracker
 from .tasks_catalog import (
     SUPPORT_BASIC,
     TASK_BY_ID,
@@ -399,9 +402,15 @@ DEFAULT_QUERIES = [
 class BasicRunner:
     """不使用大模型的基础自动化：卡片扫描 + 通用答题 + 领取。"""
 
-    def __init__(self, session: BrowserSession, cfg: AppConfig) -> None:
+    def __init__(
+        self,
+        session: BrowserSession,
+        cfg: AppConfig,
+        points: "PointsTracker | None" = None,
+    ) -> None:
         self.session = session
         self.cfg = cfg
+        self.points = points
         self.log = logging.getLogger("rewards_bot.basic")
         self.dashboard_url = cfg.general.url
         self.random = random.Random()
@@ -464,6 +473,38 @@ class BasicRunner:
                 pass
             return None
 
+    def _pause(self, page, low_ms: int, high_ms: int) -> None:
+        """按防检测设置等待：开启时用右偏分布（每次不同），关闭时保持均匀随机。"""
+        low = max(0.01, low_ms / 1000.0)
+        high = max(low, high_ms / 1000.0)
+        if self.cfg.stealth.enabled:
+            from .stealth import sample_span
+
+            seconds = sample_span(self.random, low, high)
+        else:
+            seconds = self.random.uniform(low, high)
+        try:
+            page.wait_for_timeout(max(1, int(seconds * 1000)))
+        except PlaywrightError:
+            pass
+
+    def _human_click(self, locator) -> None:
+        """先把鼠标挪到目标上再点，而不是直接触发 click。"""
+        if self.cfg.stealth.mouse_jitter:
+            page = self.session.current_page
+            try:
+                box = locator.bounding_box()
+                if box:
+                    page.mouse.move(
+                        box["x"] + box["width"] * self.random.uniform(0.25, 0.75),
+                        box["y"] + box["height"] * self.random.uniform(0.3, 0.7),
+                        steps=self.random.randint(8, 22),
+                    )
+                    self._pause(page, 60, 280)
+            except PlaywrightError:
+                pass
+        self.session.click_maybe_popup(locator)
+
     def _page_state(self) -> str:
         try:
             return self.session.current_page.evaluate(
@@ -486,7 +527,10 @@ class BasicRunner:
         if not selected:
             self.log.warning("基础任务清单为空，本轮不会处理任务卡片。")
 
-        for scan in range(5):
+        # 积分证据要求每完成一个任务后重新读取汇率；若因此刷新了页面，
+        # 当前扫描里的 data-qbot-task 标记会失效，需要回到外层重新扫描。
+        max_scans = max(6, max_tasks * 3)
+        for scan in range(max_scans):
             if processed >= max_tasks:
                 break
             page = self._ensure_dashboard()
@@ -536,6 +580,7 @@ class BasicRunner:
                 break
 
             processed_this_scan = 0
+            reloaded = False
             for task in new_tasks:
                 if processed >= max_tasks:
                     break
@@ -548,19 +593,26 @@ class BasicRunner:
                 label = str(task.get("text") or "")[:150]
                 self.log.info("处理任务 %s/%s：%s", processed, max_tasks, label)
                 dashboard_failed = False
+                login_lost = False
+                evidence = None
+                clicked = False
                 try:
                     page = self.session.current_page
                     locator = page.locator(f'[data-qbot-task="{task["idx"]}"]').first
                     if page.locator(f'[data-qbot-task="{task["idx"]}"]').count() == 0:
                         self.log.warning("任务元素已消失，跳过。")
                     else:
+                        if self.points is not None:
+                            evidence = self.points.before_task(processed, label)
                         try:
                             locator.scroll_into_view_if_needed(timeout=3_000)
                         except PlaywrightError:
                             pass
-                        self.session.click_maybe_popup(locator)
+                        self._human_click(locator)
+                        clicked = True
                         self._handle_task_page(label)
                 except LoginRequired:
+                    login_lost = True
                     raise
                 except Exception as exc:
                     self.log.warning("处理任务失败：%s", str(exc).splitlines()[0][:220])
@@ -574,10 +626,24 @@ class BasicRunner:
                         self.log.warning("返回任务页失败：%s", exc)
                         # 无法回到任务页时结束本轮任务，避免继续在未知页面点击。
                         dashboard_failed = True
+                    if self.points is not None and evidence is not None:
+                        if clicked and not login_lost and not dashboard_failed:
+                            result = self.points.finish_task(evidence)
+                            if result.get("page_reloaded"):
+                                reloaded = True
+                        else:
+                            self.points.cancel_task(
+                                evidence,
+                                "登录失效" if login_lost else "未完成任务或无法返回任务页",
+                            )
                 if dashboard_failed:
                     return processed
+                if reloaded:
+                    break
             if processed_this_scan == 0:
                 break
+            if reloaded:
+                continue
 
         self.log.info("基础任务处理结束，共尝试 %s 个任务。", processed)
         return processed
@@ -594,7 +660,7 @@ class BasicRunner:
             page.wait_for_load_state("domcontentloaded", timeout=8_000)
         except Exception:
             pass
-        page.wait_for_timeout(self.random.randint(1_200, 2_200))
+        self._pause(page, 1_200, 2_200)
 
         try:
             quiz_like = bool(page.evaluate(QUIZ_DETECT_JS))
@@ -717,7 +783,7 @@ class BasicRunner:
                 try:
                     if page.locator(f'[data-qbot-claim="{i}"]').count() == 0:
                         continue
-                    self.session.click_maybe_popup(locator)
+                    self._human_click(locator)
                     claimed += 1
                     clicked_any = True
                     self.log.info("点击领取按钮：%s", label or "(无文字)")
@@ -747,7 +813,7 @@ class BasicRunner:
         try:
             locator = page.locator('[data-qbot-confirm="1"]').first
             if page.locator('[data-qbot-confirm="1"]').count() > 0:
-                self.session.click_maybe_popup(locator)
+                self._human_click(locator)
                 page.wait_for_timeout(700)
                 self.log.info("点击领取确认：%s", label)
         except Exception as exc:
@@ -777,47 +843,19 @@ class BasicRunner:
         count = self.cfg.basic.search_count
         if count <= 0:
             return 0
-        host = self.cfg.basic.search_host
-        if not host.startswith(("http://", "https://")):
-            host = "https://" + host
-        host = host.rstrip("/")
         queries = self.load_queries()
-        suffixes = [
-            "最新消息", "是什么", "怎么用", "推荐", "教程", "对比", "2026",
-            "生活小技巧", "常见问题", "经验分享", "指南", "新闻",
-        ]
-        self.log.info("开始可选搜索任务：%s 次，搜索主机 %s", count, host)
-        page = self._ensure_dashboard()
-        completed = 0
-        for i in range(1, count + 1):
-            if self.session.is_login_page():
-                raise LoginRequired("执行搜索任务时登录失效，请先运行 --login。")
-            query = self.random.choice(queries)
-            if self.random.random() < 0.6:
-                query = f"{query} {self.random.choice(suffixes)}"
-            url = f"{host}/search?q={quote_plus(query)}&form=QBLH"
-            try:
-                page = self.session.current_page
-                page.goto(url, wait_until="domcontentloaded", timeout=45_000)
-                delay = self.random.uniform(
-                    self.cfg.basic.search_delay_min, self.cfg.basic.search_delay_max
-                )
-                page.wait_for_timeout(int(delay * 1000))
-                try:
-                    page.mouse.wheel(0, self.random.randint(120, 700))
-                    page.wait_for_timeout(self.random.randint(400, 900))
-                except PlaywrightError:
-                    pass
-                completed += 1
-                self.log.info("搜索 %s/%s：%s（等待 %.1f 秒）", i, count, query[:60], delay)
-            except Exception as exc:
-                self.log.warning("搜索 %s/%s 失败：%s", i, count, str(exc).splitlines()[0][:180])
-                page = self.session.current_page
-                try:
-                    page.goto(self.dashboard_url, wait_until="domcontentloaded", timeout=45_000)
-                except Exception:
-                    pass
-                time.sleep(2)
+        # 延迟导入：stealth 依赖 config/browser，放在这里避免模块级循环导入。
+        from .stealth import build_searcher, describe_modes
+
+        searcher = build_searcher(self.session, self.cfg, log=self.log)
+        self.log.info(
+            "开始可选搜索任务：%s 次，搜索主机 %s，防检测=%s",
+            count,
+            self.cfg.basic.search_host,
+            describe_modes(self.cfg.stealth),
+        )
+        self._ensure_dashboard()
+        completed = searcher.run(count, queries)
         self.log.info("搜索任务结束：完成 %s/%s 次。", completed, count)
         try:
             self._ensure_dashboard()

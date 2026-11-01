@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import random
 import time
 from typing import Any
 from urllib.parse import urlparse
@@ -72,6 +73,7 @@ class RewardsAgent:
         self.llm = LLMClient(cfg.advanced)
         self.allowed_hosts = cfg.advanced.allowed_hosts
         self.dashboard_url = cfg.general.url
+        self.random = random.Random()
         self.system_prompt = SYSTEM_PROMPT.format(
             allowed_hosts="、".join(self.allowed_hosts),
             dashboard_url=self.dashboard_url,
@@ -169,9 +171,52 @@ class RewardsAgent:
         return (
             f"这是第 {step}/{self.cfg.advanced.max_steps} 步。\n"
             f"最近动作记录：\n{history_text}\n\n"
-            f"当前页面观察（元素的 id 只在本步有效）：\n{format_observation(obs)}\n\n"
+            f"当前页面观察（元素的 id 只在本步有效）：\n{self._compact_observation(obs)}\n\n"
             "请根据目标和安全约束，输出下一步的一个 JSON 动作。"
         )
+
+    def _compact_observation(self, obs: dict[str, Any]) -> str:
+        """强力防检测开启时压缩观察内容，把每步 token 压到最低。"""
+        if not self.cfg.stealth.strong_enabled:
+            return format_observation(obs)
+        trimmed = dict(obs)
+        text = str(trimmed.get("text") or "")
+        limit = max(400, int(self.cfg.stealth.strong_max_page_text))
+        trimmed["text"] = text[:limit]
+        elements = list(trimmed.get("elements") or [])
+        # 只保留前 N 个元素：模型几乎总是先看主区域靠前的控件。
+        trimmed["elements"] = elements[: max(10, int(self.cfg.stealth.strong_max_elements))]
+        trimmed["headings"] = list(trimmed.get("headings") or [])[:6]
+        return format_observation(trimmed)
+
+    def _sample_pause(self, low_ms: int, high_ms: int) -> int:
+        """等待时长：开防检测时右偏采样（每次不同），否则取原值。"""
+        low = max(0.01, low_ms / 1000.0)
+        high = max(low, high_ms / 1000.0)
+        if self.cfg.stealth.enabled:
+            from .stealth import sample_span
+
+            return max(1, int(sample_span(self.random, low, high) * 1000))
+        return max(1, int(self.random.uniform(low, high) * 1000))
+
+    def _human_click(self, page, locator) -> None:
+        """先移动鼠标再点击，避免零位移的机械点击。"""
+        if self.cfg.stealth.mouse_jitter:
+            try:
+                box = locator.bounding_box()
+            except PlaywrightError:
+                box = None
+            if box:
+                try:
+                    page.mouse.move(
+                        box["x"] + box["width"] * self.random.uniform(0.25, 0.75),
+                        box["y"] + box["height"] * self.random.uniform(0.3, 0.7),
+                        steps=self.random.randint(9, 24),
+                    )
+                    page.wait_for_timeout(self.random.randint(60, 260))
+                except PlaywrightError:
+                    pass
+        locator.click(timeout=8_000)
 
     @staticmethod
     def _action_signature(action: dict[str, Any]) -> str:
@@ -271,11 +316,11 @@ class RewardsAgent:
             except PlaywrightError:
                 pass
             try:
-                locator.click(timeout=8_000)
+                self._human_click(page, locator)
             except PlaywrightError as exc:
                 return False, f"点击失败：{str(exc).splitlines()[0][:200]}"
 
-            page.wait_for_timeout(900)
+            page.wait_for_timeout(self._sample_pause(700, 1_300))
             self.session.adopt_new_pages()
             try:
                 self.session.current_page.wait_for_load_state("domcontentloaded", timeout=6_000)
@@ -296,13 +341,19 @@ class RewardsAgent:
             return True, f"已点击“{label}”，当前页面：{current_url[:160]}"
 
         if kind == "scroll":
-            page.evaluate("(dy) => window.scrollBy(0, dy)", action["dy"])
-            page.wait_for_timeout(500)
-            return True, f"已滚动 {action['dy']} 像素。"
+            dy = action["dy"]
+            if self.cfg.stealth.enabled:
+                dy = int(dy * self.random.uniform(0.86, 1.14))
+            page.evaluate("(dy) => window.scrollBy(0, dy)", dy)
+            page.wait_for_timeout(self._sample_pause(350, 750))
+            return True, f"已滚动 {dy} 像素。"
 
         if kind == "wait":
-            page.wait_for_timeout(int(action["seconds"] * 1000))
-            return True, f"已等待 {action['seconds']} 秒。"
+            seconds = float(action["seconds"])
+            if self.cfg.stealth.enabled:
+                seconds = seconds * self.random.uniform(0.85, 1.25)
+            page.wait_for_timeout(int(seconds * 1000))
+            return True, f"已等待 {seconds:.1f} 秒。"
 
         if kind == "back":
             try:

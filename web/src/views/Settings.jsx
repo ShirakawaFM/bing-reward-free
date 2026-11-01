@@ -11,10 +11,12 @@ import {
   EyeOff,
   Info,
   KeyRound,
+  Keyboard,
   Leaf,
   ListChecks,
   Loader2,
   Monitor,
+  MousePointer2,
   Power,
   RotateCcw,
   Save,
@@ -55,6 +57,19 @@ function toForm(settings) {
       max_steps: String(settings.advanced.max_steps),
       max_minutes: String(settings.advanced.max_minutes),
     },
+    stealth: {
+      basic_enabled: Boolean(settings.stealth?.basic_enabled ?? true),
+      strong_enabled: Boolean(settings.stealth?.strong_enabled ?? false),
+      query_jitter: String(settings.stealth?.query_jitter ?? 2),
+      typing_enabled: Boolean(settings.stealth?.typing_enabled ?? true),
+      mouse_jitter: Boolean(settings.stealth?.mouse_jitter ?? true),
+      break_probability: String(settings.stealth?.break_probability ?? 0.12),
+      click_result_probability: String(
+        settings.stealth?.click_result_probability ?? 0.15,
+      ),
+      plan_max_tokens: String(settings.stealth?.plan_max_tokens ?? 700),
+      plan_cache_hours: String(settings.stealth?.plan_cache_hours ?? 12),
+    },
   };
 }
 
@@ -72,6 +87,11 @@ function validate(form) {
     [form.advanced.temperature, "模型温度", 0, 2],
     [form.advanced.max_steps, "最大步数", 3, 120],
     [form.advanced.max_minutes, "最长运行分钟", 1, 60],
+    [form.stealth.query_jitter, "查询扰动字符数", 1, 3],
+    [form.stealth.break_probability, "长停顿概率", 0, 0.9],
+    [form.stealth.click_result_probability, "点开结果概率", 0, 1],
+    [form.stealth.plan_max_tokens, "剧本 token 上限", 200, 2000],
+    [form.stealth.plan_cache_hours, "剧本缓存小时", 0, 720],
   ];
   for (const [value, label, min, max] of numbers) {
     const parsed = Number(value);
@@ -288,6 +308,17 @@ export default function Settings({
           temperature: Number(form.advanced.temperature),
           max_steps: Number(form.advanced.max_steps),
           max_minutes: Number(form.advanced.max_minutes),
+        },
+        stealth: {
+          basic_enabled: form.stealth.basic_enabled,
+          strong_enabled: form.stealth.strong_enabled,
+          query_jitter: Number(form.stealth.query_jitter),
+          typing_enabled: form.stealth.typing_enabled,
+          mouse_jitter: form.stealth.mouse_jitter,
+          break_probability: Number(form.stealth.break_probability),
+          click_result_probability: Number(form.stealth.click_result_probability),
+          plan_max_tokens: Number(form.stealth.plan_max_tokens),
+          plan_cache_hours: Number(form.stealth.plan_cache_hours),
         },
       };
       if (apiKey.trim()) payload.advanced.api_key = apiKey.trim();
@@ -633,6 +664,136 @@ export default function Settings({
                     }
                   />
                 </Field>
+              </div>
+            ) : null}
+          </SettingsSection>
+
+          <SettingsSection
+            icon={ShieldCheck}
+            tone="sky"
+            kicker="ANTI-DETECTION"
+            title="防检测"
+            description="让搜索行为更像真人：查询带随机偏移、节奏右偏采样、逐字输入；强力模式由大模型一次性规划整轮动作。"
+            badge={
+              form.stealth.strong_enabled
+                ? "STRONG"
+                : form.stealth.basic_enabled
+                  ? "BASIC"
+                  : "OFF"
+            }
+          >
+            <div className="toggle-stack">
+              <ToggleRow
+                icon={ShieldCheck}
+                title="基础防检测（本地规则，零费用）"
+                hint="搜索词每次只改 1–2 个字符（同音/形近汉字、相邻字母换位、键盘邻键笔误），语义不变；等待时长按右偏分布采样，每次都不一样；输入时逐字敲键并随机移动鼠标。"
+                checked={form.stealth.basic_enabled}
+                onChange={(value) => update("stealth", "basic_enabled", value)}
+              />
+              <ToggleRow
+                icon={Sparkles}
+                title="强力防检测（大模型规划整轮行为）"
+                hint="每轮只调用一次模型，产出每条搜索的停留时长、滚动次数、是否悬停或点开结果；结果缓存在 state/stealth/plan-cache.json，同一天重复运行不再消耗 token。没有 API Key 或调用失败时自动降级为本地模拟。"
+                checked={form.stealth.strong_enabled}
+                onChange={(value) => update("stealth", "strong_enabled", value)}
+                tone={
+                  form.stealth.strong_enabled && !keyConfigured ? "warn" : ""
+                }
+              />
+              <ToggleRow
+                icon={Keyboard}
+                title="逐字输入搜索词"
+                hint="关闭后退回“直接跳转搜索 URL”，查询扰动依然生效，但输入过程不再模拟键盘。"
+                checked={form.stealth.typing_enabled}
+                onChange={(value) => update("stealth", "typing_enabled", value)}
+              />
+              <ToggleRow
+                icon={MousePointer2}
+                title="鼠标人类化"
+                hint="点击前先把鼠标移到目标上，页面停留时随机漂移，避免零位移的机械点击。"
+                checked={form.stealth.mouse_jitter}
+                onChange={(value) => update("stealth", "mouse_jitter", value)}
+              />
+            </div>
+
+            {form.stealth.basic_enabled || form.stealth.strong_enabled ? (
+              <div className="field-grid reveal-grid">
+                <Field label="查询扰动字符数" hint="1 最保守 · 2 默认 · 3 变化更明显">
+                  <input
+                    type="number"
+                    min="1"
+                    max="3"
+                    step="1"
+                    value={form.stealth.query_jitter}
+                    onChange={(event) =>
+                      update("stealth", "query_jitter", event.target.value)
+                    }
+                  />
+                </Field>
+                <Field label="长停顿概率" hint="0 – 0.9，约每 8 次搜索多停一次">
+                  <input
+                    type="number"
+                    min="0"
+                    max="0.9"
+                    step="0.01"
+                    value={form.stealth.break_probability}
+                    onChange={(event) =>
+                      update("stealth", "break_probability", event.target.value)
+                    }
+                  />
+                </Field>
+                <Field label="点开结果概率" hint="0 表示只滚动/悬停，不点结果">
+                  <input
+                    type="number"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={form.stealth.click_result_probability}
+                    onChange={(event) =>
+                      update(
+                        "stealth",
+                        "click_result_probability",
+                        event.target.value,
+                      )
+                    }
+                  />
+                </Field>
+                {form.stealth.strong_enabled ? (
+                  <>
+                    <Field label="剧本 token 上限" hint="200 – 2000，越小越省">
+                      <input
+                        type="number"
+                        min="200"
+                        max="2000"
+                        step="50"
+                        value={form.stealth.plan_max_tokens}
+                        onChange={(event) =>
+                          update(
+                            "stealth",
+                            "plan_max_tokens",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </Field>
+                    <Field label="剧本缓存（小时）" hint="0 表示每次都重新问模型">
+                      <input
+                        type="number"
+                        min="0"
+                        max="720"
+                        step="1"
+                        value={form.stealth.plan_cache_hours}
+                        onChange={(event) =>
+                          update(
+                            "stealth",
+                            "plan_cache_hours",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </Field>
+                  </>
+                ) : null}
               </div>
             ) : null}
           </SettingsSection>

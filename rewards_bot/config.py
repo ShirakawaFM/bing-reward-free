@@ -89,11 +89,39 @@ class AdvancedConfig:
 
 
 @dataclass(slots=True)
+class StealthConfig:
+    """防检测参数。
+
+    basic_enabled  —— 基础防检测：查询字符偏移 + 右偏节奏 + 逐字输入（本地规则，零费用）。
+    strong_enabled —— 强力防检测：一次大模型调用规划整轮人类行为，带缓存与本地抖动。
+    两者都关闭时完全保留原始行为。
+    """
+
+    basic_enabled: bool = True
+    strong_enabled: bool = False
+    query_jitter: int = 2
+    typing_enabled: bool = True
+    mouse_jitter: bool = True
+    break_probability: float = 0.12
+    click_result_probability: float = 0.15
+    plan_max_tokens: int = 700
+    plan_cache_hours: float = 12.0
+    # 强力模式下每步观察内容的压缩上限，用来压低 token。
+    strong_max_page_text: int = 1200
+    strong_max_elements: int = 45
+
+    @property
+    def enabled(self) -> bool:
+        return self.basic_enabled or self.strong_enabled
+
+
+@dataclass(slots=True)
 class AppConfig:
     path: Path
     general: GeneralConfig
     basic: BasicConfig
     advanced: AdvancedConfig
+    stealth: StealthConfig = field(default_factory=StealthConfig)
 
 
 def _as_bool(value: object, default: bool) -> bool:
@@ -153,7 +181,8 @@ def load_config(path: str | Path) -> AppConfig:
             "请先复制 config.example.toml 为 config.toml，或用 -c 指定配置文件。"
         )
     try:
-        raw = tomllib.loads(config_path.read_text(encoding="utf-8"))
+        # 兼容记事本/编辑器保存的 UTF-8 BOM：tomllib 不接受行首 BOM。
+        raw = tomllib.loads(config_path.read_text(encoding="utf-8-sig"))
     except tomllib.TOMLDecodeError as exc:
         raise ConfigError(f"配置文件 TOML 语法错误：{exc}") from exc
 
@@ -255,4 +284,60 @@ def load_config(path: str | Path) -> AppConfig:
         allowed_hosts=allowed_hosts,
     )
 
-    return AppConfig(path=config_path, general=general, basic=basic, advanced=advanced)
+    stealth = _load_stealth(raw.get("stealth") or {})
+
+    return AppConfig(
+        path=config_path,
+        general=general,
+        basic=basic,
+        advanced=advanced,
+        stealth=stealth,
+    )
+
+
+def _load_stealth(s: dict) -> StealthConfig:
+    """解析 [stealth] 段。缺省时保持“基础防检测开启、强力关闭”。"""
+    if not isinstance(s, dict):
+        return StealthConfig()
+
+    def _num(key: str, default: float) -> float:
+        try:
+            return float(_get(s, key, default))
+        except (TypeError, ValueError) as exc:
+            raise ConfigError(f"stealth.{key} 必须是数字。") from exc
+
+    def _int(key: str, default: int) -> int:
+        try:
+            return int(_get(s, key, default))
+        except (TypeError, ValueError) as exc:
+            raise ConfigError(f"stealth.{key} 必须是整数。") from exc
+
+    query_jitter = _int("query_jitter", 2)
+    if query_jitter < 1 or query_jitter > 3:
+        raise ConfigError("stealth.query_jitter 只能是 1、2 或 3。")
+
+    break_probability = _num("break_probability", 0.12)
+    if break_probability < 0 or break_probability > 0.9:
+        raise ConfigError("stealth.break_probability 必须在 0 – 0.9 之间。")
+
+    click_probability = _num("click_result_probability", 0.15)
+    if click_probability < 0 or click_probability > 1:
+        raise ConfigError("stealth.click_result_probability 必须在 0 – 1 之间。")
+
+    cache_hours = _num("plan_cache_hours", 12.0)
+    if cache_hours < 0 or cache_hours > 24 * 30:
+        raise ConfigError("stealth.plan_cache_hours 必须在 0 – 720 之间。")
+
+    return StealthConfig(
+        basic_enabled=_as_bool(s.get("basic_enabled"), True),
+        strong_enabled=_as_bool(s.get("strong_enabled"), False),
+        query_jitter=query_jitter,
+        typing_enabled=_as_bool(s.get("typing_enabled"), True),
+        mouse_jitter=_as_bool(s.get("mouse_jitter"), True),
+        break_probability=break_probability,
+        click_result_probability=click_probability,
+        plan_max_tokens=max(200, min(2000, _int("plan_max_tokens", 700))),
+        plan_cache_hours=cache_hours,
+        strong_max_page_text=max(200, min(3000, _int("strong_max_page_text", 1200))),
+        strong_max_elements=max(10, min(140, _int("strong_max_elements", 45))),
+    )

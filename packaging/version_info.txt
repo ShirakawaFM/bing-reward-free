@@ -1,8 +1,8 @@
 # UTF-8
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(1, 0, 1, 0),
-    prodvers=(1, 0, 1, 0),
+    filevers=(1, 1, 0, 0),
+    prodvers=(1, 1, 0, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -17,12 +17,12 @@ VSVersionInfo(
           u'080404b0',
           [StringStruct(u'CompanyName', u'Rewards Pilot'),
            StringStruct(u'FileDescription', u'Rewards Pilot - Microsoft Rewards 每日任务本地自动化控制台'),
-           StringStruct(u'FileVersion', u'1.0.1'),
+           StringStruct(u'FileVersion', u'1.1.0'),
            StringStruct(u'InternalName', u'RewardsPilot'),
            StringStruct(u'LegalCopyright', u'仅用于个人账号的本地辅助工具'),
            StringStruct(u'OriginalFilename', u'RewardsPilot.exe'),
            StringStruct(u'ProductName', u'Rewards Pilot'),
-           StringStruct(u'ProductVersion', u'1.0.1')])
+           StringStruct(u'ProductVersion', u'1.1.0')])
       ]),
     VarFileInfo([VarStruct(u'Translation', [2052, 1200])])
   ]

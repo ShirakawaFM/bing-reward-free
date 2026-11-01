@@ -151,8 +151,16 @@ const SHOT_LABELS = [
 
 export function shotLabel(name) {
   const base = String(name || "").replace(/\.png$/i, "");
+  const lower = base.toLowerCase();
+  if (lower === "points-run-start") return "积分基线";
+  if (lower === "points-run-end") return "积分结算";
+  if (lower.startsWith("points-task-")) {
+    if (lower.endsWith("-before")) return "任务前积分";
+    if (lower.endsWith("-after")) return "任务后积分";
+    return "任务积分证据";
+  }
   for (const [prefix, label] of SHOT_LABELS) {
-    if (base.toLowerCase().startsWith(prefix)) return label;
+    if (lower.startsWith(prefix)) return label;
   }
   return base.replace(/[-_]+/g, " ").slice(0, 28) || "运行截图";
 }

@@ -19,7 +19,11 @@ a = Analysis(
     pathex=[str(ROOT)],
     binaries=playwright_binaries,
     datas=datas,
-    hiddenimports=playwright_hidden + ["pystray._win32"],
+    hiddenimports=playwright_hidden + [
+        "pystray._win32",
+        # stealth 只在 basic.py / agent.py 的函数内部延迟导入，显式声明避免漏打。
+        "rewards_bot.stealth",
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

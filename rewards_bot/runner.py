@@ -9,6 +9,7 @@ from .browser import BrowserSession, LoginRequired
 from .config import AppConfig
 from .dom import is_rewards_home_url
 from .llm import LLMError
+from .points import PointsTracker
 
 
 def run_once(cfg: AppConfig, mode: str | None = None) -> bool:
@@ -38,66 +39,80 @@ def run_once(cfg: AppConfig, mode: str | None = None) -> bool:
     try:
         with BrowserSession(cfg) as session:
             task_runner = BasicRunner(session, cfg)
+            tracker = PointsTracker(session, cfg, mode=chosen_mode)
+            task_runner.points = tracker
+            tracker_started = False
+
             try:
-                session.open_dashboard()
-                if chosen_mode == "advanced":
-                    agent = RewardsAgent(session, cfg)
-                    summary = agent.run()
-                    log.info("大模型模式结束：%s", summary)
-                else:
-                    task_runner.run_daily_tasks()
-            except LoginRequired as exc:
-                log.error("%s", exc)
-                success = False
-            except (AgentAbort, LLMError) as exc:
-                log.error("大模型模式中止：%s", exc)
-                success = False
-                session.screenshot("agent-abort")
-            except Exception:
-                log.exception("日常任务执行失败")
-                success = False
-                session.screenshot("task-failed")
-
-            # 无论任务模式是否顺利结束，都尝试一次安全领取和可选搜索。
-            try:
-                session.open_dashboard()
-            except LoginRequired as exc:
-                log.error("无法回到任务页，跳过领取与搜索：%s", exc)
-                success = False
-            except Exception as exc:
-                log.warning("无法回到任务页，跳过领取与搜索：%s", exc)
-                success = False
-            else:
-                if cfg.basic.auto_claim:
-                    try:
-                        task_runner.claim_rewards()
-                    except LoginRequired as exc:
-                        log.error("%s", exc)
-                        success = False
-                    except Exception:
-                        log.exception("领取积分时发生异常")
-                        success = False
-
-                if cfg.basic.search_enabled:
-                    try:
-                        task_runner.run_searches()
-                    except LoginRequired as exc:
-                        log.error("%s", exc)
-                        success = False
-                    except Exception:
-                        log.exception("自动搜索时发生异常")
-                        success = False
-                else:
-                    log.info("自动搜索未启用（basic.search_enabled=false）。")
-
                 try:
-                    if not is_rewards_home_url(
-                        session.current_page.url, cfg.general.url
-                    ):
-                        session.open_dashboard()
-                    session.screenshot("final", full_page=True)
+                    session.open_dashboard()
+                    tracker.begin_run()
+                    tracker_started = True
+                    if chosen_mode == "advanced":
+                        agent = RewardsAgent(session, cfg)
+                        summary = agent.run()
+                        log.info("大模型模式结束：%s", summary)
+                    else:
+                        task_runner.run_daily_tasks()
+                except LoginRequired as exc:
+                    log.error("%s", exc)
+                    success = False
+                except (AgentAbort, LLMError) as exc:
+                    log.error("大模型模式中止：%s", exc)
+                    success = False
+                    session.screenshot("agent-abort")
+                except Exception:
+                    log.exception("日常任务执行失败")
+                    success = False
+                    session.screenshot("task-failed")
+
+                # 无论任务模式是否顺利结束，都尝试一次安全领取和可选搜索。
+                try:
+                    session.open_dashboard()
+                except LoginRequired as exc:
+                    log.error("无法回到任务页，跳过领取与搜索：%s", exc)
+                    success = False
                 except Exception as exc:
-                    log.debug("保存最后截图失败：%s", exc)
+                    log.warning("无法回到任务页，跳过领取与搜索：%s", exc)
+                    success = False
+                else:
+                    if cfg.basic.auto_claim:
+                        try:
+                            task_runner.claim_rewards()
+                        except LoginRequired as exc:
+                            log.error("%s", exc)
+                            success = False
+                        except Exception:
+                            log.exception("领取积分时发生异常")
+                            success = False
+
+                    if cfg.basic.search_enabled:
+                        try:
+                            task_runner.run_searches()
+                        except LoginRequired as exc:
+                            log.error("%s", exc)
+                            success = False
+                        except Exception:
+                            log.exception("自动搜索时发生异常")
+                            success = False
+                    else:
+                        log.info("自动搜索未启用（basic.search_enabled=false）。")
+
+                    try:
+                        if not is_rewards_home_url(
+                            session.current_page.url, cfg.general.url
+                        ):
+                            session.open_dashboard()
+                        session.screenshot("final", full_page=True)
+                    except Exception as exc:
+                        log.debug("保存最后截图失败：%s", exc)
+            finally:
+                # 积分结算本身不会改变任务成败：读不到或截图缺失只会标记为未确认。
+                if tracker_started:
+                    try:
+                        tracker.finish_run()
+                    except Exception:
+                        log.exception("保存本次积分证据失败")
     except LoginRequired as exc:
         log.error("%s", exc)
         success = False

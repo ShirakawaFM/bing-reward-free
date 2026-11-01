@@ -27,6 +27,7 @@ from waitress.server import create_server
 from rewards_bot.config import ConfigError
 from rewards_bot.logging_setup import setup_logging
 from rewards_bot.paths import PROJECT_ROOT, RESOURCE_ROOT
+from rewards_bot.points import read_points_summary
 from rewards_bot.tasks_catalog import catalog_payload, points_forecast
 
 from .power_mode import detect_safe_background_apps
@@ -177,6 +178,9 @@ def create_app(runtime: Runtime, token: str) -> Flask:
                     "api_key_set": bool(cfg.advanced.api_key),
                     "model": cfg.advanced.model,
                 },
+                "points": read_points_summary(
+                    cfg.general.state_dir, cfg.general.timezone
+                ),
                 "job": runtime.job.snapshot(),
                 "login": runtime.login.snapshot(),
                 "scheduler": runtime.scheduler.snapshot(),
@@ -444,7 +448,7 @@ def create_app(runtime: Runtime, token: str) -> Flask:
                         [item for item in folder.glob("*.png") if item.is_file()],
                         key=lambda item: item.stat().st_mtime,
                         reverse=True,
-                    )[:18]
+                    )[:40]
                 except OSError:
                     candidates = []
                 for file in candidates:
