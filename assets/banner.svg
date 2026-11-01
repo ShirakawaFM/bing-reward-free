@@ -163,7 +163,7 @@
     <circle cx="844" cy="312" r="3.5" fill="#2BE8C4">
       <animate attributeName="opacity" values="1;0.25;1" dur="2s" repeatCount="indefinite"/>
     </circle>
-    <text x="856" y="316" fill="#7FA3CB" font-family="'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="10">本机会话 · Edge · 不保存 Key</text>
+    <text x="856" y="316" fill="#7FA3CB" font-family="'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="10">本机会话 · Edge · 日志不记录 Key</text>
     <text x="1172" y="316" text-anchor="end" fill="#FFC46B" font-family="Consolas, 'Courier New', monospace" font-size="10">08:30</text>
   </g>
 

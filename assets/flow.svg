@@ -89,7 +89,7 @@
       <rect x="36" y="246" width="600" height="112" rx="14" fill="#07182B" stroke="#1E3F63"/>
       <rect x="36" y="246" width="4" height="112" rx="2" fill="url(#fn2)" opacity="0.55"/>
       <text x="58" y="278" fill="#5F87B5" font-family="Consolas, monospace" font-size="12" letter-spacing="1.2">LOCAL FIRST / 本机优先</text>
-      <text x="58" y="308" fill="#EAF3FF" font-size="18" font-weight="700">账号、Key、日志都不出本机</text>
+      <text x="58" y="308" fill="#EAF3FF" font-size="18" font-weight="700">登录态、日志、截图都不出本机</text>
       <text x="58" y="332" fill="#8FA9C9" font-size="12.5">127.0.0.1 + 临时令牌 · 截图只存本地 · 随时可暂停</text>
     </g>
   </g>

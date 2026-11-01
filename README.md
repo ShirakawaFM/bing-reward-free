@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/banner.svg?v=2" alt="Bing-reward FREE：把每日 Rewards 任务交给自动巡航" width="100%" />
+<img src="assets/banner.svg?v=3" alt="Bing-reward FREE：把每日 Rewards 任务交给自动巡航" width="100%" />
 
 **把每日 Rewards 任务，交给自动巡航。**
 
@@ -69,7 +69,7 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 | 📌 **托盘常驻** | 左键打开控制台；右键可立即运行、暂停调度、切换低功耗、打开日志文件夹或退出 |
 | 🔒 **本地优先** | 后端只监听 `127.0.0.1` 并使用一次性令牌；登录态、日志、截图不出本机；API Key 不写日志 |
 
-<img src="assets/flow.svg" alt="一次运行的五步：打开仪表盘 → 扫描任务 → 规则或模型决策 → 浏览与作答 → 只领取 Claim" width="100%" />
+<img src="assets/flow.svg?v=2" alt="一次运行的五步：打开仪表盘 → 扫描任务 → 规则或模型决策 → 浏览与作答 → 只领取 Claim" width="100%" />
 
 一次运行只做五件事：**打开仪表盘 → 扫描任务卡片 → 规则或模型决策 → 浏览与作答 → 只领取 Claim。** 不兑换、不购买、不修改账号。
 
