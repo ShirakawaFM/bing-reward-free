@@ -1,0 +1,76 @@
+[general]
+# 打开的任务页面。一般不需要改。
+url = "https://rewards.bing.com/dashboard"
+
+# 调度使用的时区。中国用户一般为 Asia/Shanghai。
+timezone = "Asia/Shanghai"
+
+# 每天固定运行时间，24 小时制 HH:MM。
+run_at = "08:30"
+
+# basic   = 不调用大模型，使用内置规则完成每日任务
+# advanced = 调用 DeepSeek（或 OpenAI 兼容接口），基于元素索引操作页面
+mode = "basic"
+
+# 是否无头运行。首次登录时建议 false；日常也建议保持 false，更容易发现验证码/登录失效。
+headless = false
+
+# 浏览器。Windows 推荐 "msedge"（系统自带 Edge，无需额外下载）。
+# 也可以填 "chrome"；留空则使用 Playwright 内置 Chromium（需先运行 playwright install chromium）。
+browser_channel = "msedge"
+
+# 每次操作之间的额外延迟（毫秒），用于降低误触和页面还没加载完的概率。
+slow_mo_ms = 40
+
+# 相对路径以本配置文件所在目录为基准。
+user_data_dir = ".browser-profile"
+state_dir = "state"
+log_dir = "logs"
+
+# 程序启动时，如果今天已经过了执行时间且今天还没跑过，就立即补跑一次。
+catch_up = true
+
+[basic]
+# 一轮最多尝试多少个仪表盘任务卡片。
+max_tasks = 8
+
+# 每个任务页面最多尝试多少轮“选答案/点继续”。
+max_rounds_per_task = 14
+
+# 只点击明确的“领取/Claim”按钮，绝不点击“兑换/Redeem”。
+auto_claim = true
+
+# 自动搜索积分默认关闭：它更容易触发风控/账号限制。确认风险后再打开。
+search_enabled = false
+search_count = 20
+search_delay_min = 6
+search_delay_max = 12
+search_host = "https://www.bing.com"
+search_queries_file = "queries.txt"
+read_wait_seconds = 6
+
+# 基础模式要处理的任务类型（界面设置页可勾选）。
+# 未写这一项时使用全部内置可完成的卡片类型。
+# 可选值：daily_quiz, daily_poll, daily_link, checkin, this_or_that,
+# weekly_set, monthly_set, more_quiz, more_poll, more_link, video
+task_types = ["daily_quiz", "daily_poll", "daily_link", "checkin", "this_or_that", "weekly_set", "monthly_set", "more_quiz", "more_poll", "more_link", "video"]
+
+[advanced]
+# DeepSeek API Key。也可以留空并设置环境变量 DEEPSEEK_API_KEY。
+# 不要把带真实 Key 的配置文件分享给别人。
+api_key = ""
+base_url = "https://api.deepseek.com"
+model = "deepseek-chat"
+
+# DeepSeek 官方 API 目前是纯文本模型，不能直接“看”截图。
+# 程序默认把页面元素编号后发给模型。截图会保存到 state/screenshots 便于排查。
+# 如果换成支持视觉的 OpenAI 兼容模型，可设为 true，截图会随请求一起发送。
+vision = false
+
+temperature = 0.0
+max_steps = 40
+max_minutes = 10
+timeout_seconds = 90
+
+# 大模型模式允许访问的域名，防止误点站外链接。
+allowed_hosts = ["rewards.bing.com", "bing.com", "www.bing.com", "cn.bing.com"]
