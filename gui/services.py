@@ -10,6 +10,7 @@ from typing import Any, Callable
 from rewards_bot.config import AppConfig, ConfigError
 from rewards_bot.scheduler import DailyScheduler
 
+from .autostart import AutostartManager
 from .log_buffer import LogBuffer
 from .onboarding import OnboardingStore
 from .power_mode import LowPowerService
@@ -34,6 +35,8 @@ class JobManager:
         self.low_power = low_power
         self.log = logging.getLogger("rewards_bot.gui.job")
         self._lock = threading.Lock()
+        self._listeners_lock = threading.Lock()
+        self._finished_listeners: list[Callable[[str, bool, str], None]] = []
         self._thread: threading.Thread | None = None
         self._status: dict[str, Any] = {
             "running": False,
@@ -50,6 +53,24 @@ class JobManager:
     def running(self) -> bool:
         with self._lock:
             return bool(self._thread and self._thread.is_alive())
+
+    def add_finished_listener(
+        self,
+        listener: Callable[[str, bool, str], None],
+    ) -> None:
+        """任务线程收尾后回调 (trigger, ok, message)。回调异常不会影响任务状态。"""
+
+        with self._listeners_lock:
+            self._finished_listeners.append(listener)
+
+    def _notify_finished(self, trigger: str, ok: bool, message: str) -> None:
+        with self._listeners_lock:
+            listeners = list(self._finished_listeners)
+        for listener in listeners:
+            try:
+                listener(trigger, ok, message)
+            except Exception:
+                self.log.exception("任务完成监听器执行失败")
 
     def snapshot(self) -> dict[str, Any]:
         with self._lock:
@@ -152,6 +173,7 @@ class JobManager:
                     "message": message,
                 }
             self.log.info("任务结束：%s", message)
+            self._notify_finished(trigger, ok, message)
 
 
 class LoginService:
@@ -418,6 +440,7 @@ class Runtime:
     ) -> None:
         self.store = store
         self.log_buffer = LogBuffer()
+        self.autostart = AutostartManager(store.config_path)
         self.job = JobManager(
             store,
             is_login_active=lambda: self.login.active,

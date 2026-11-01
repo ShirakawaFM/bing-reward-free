@@ -30,6 +30,7 @@ class GeneralConfig:
     state_dir: Path = field(default_factory=lambda: PROJECT_ROOT / "state")
     log_dir: Path = field(default_factory=lambda: PROJECT_ROOT / "logs")
     catch_up: bool = True
+    auto_exit_after_run: bool = False
 
     @property
     def run_hour_minute(self) -> tuple[int, int]:
@@ -163,6 +164,7 @@ def load_config(path: str | Path) -> AppConfig:
         state_dir=_resolve_path(g.get("state_dir"), base, PROJECT_ROOT / "state"),
         log_dir=_resolve_path(g.get("log_dir"), base, PROJECT_ROOT / "logs"),
         catch_up=_as_bool(g.get("catch_up"), True),
+        auto_exit_after_run=_as_bool(g.get("auto_exit_after_run"), False),
     )
 
     search_min = float(_get(b, "search_delay_min", 6.0))

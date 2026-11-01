@@ -24,6 +24,7 @@ user_data_dir = ".browser-profile"
 state_dir = "state"
 log_dir = "logs"
 catch_up = true
+auto_exit_after_run = false
 
 [basic]
 max_tasks = 8
@@ -102,6 +103,7 @@ class SettingsStore:
             _set_str(g, "mode", general, "mode")
             _set_bool(g, "headless", general, "headless")
             _set_bool(g, "catch_up", general, "catch_up")
+            _set_bool(g, "auto_exit_after_run", general, "auto_exit_after_run")
 
             _set_int(b, "max_tasks", basic, "max_tasks")
             _set_bool(b, "auto_claim", basic, "auto_claim")
@@ -163,6 +165,7 @@ class SettingsStore:
                 "mode": cfg.general.mode,
                 "headless": cfg.general.headless,
                 "catch_up": cfg.general.catch_up,
+                "auto_exit_after_run": cfg.general.auto_exit_after_run,
                 "browser_channel": cfg.general.browser_channel,
             },
             "basic": {

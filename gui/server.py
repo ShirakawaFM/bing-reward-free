@@ -17,6 +17,7 @@ import time
 import webbrowser
 from datetime import datetime
 from pathlib import Path
+from typing import Callable
 from urllib.parse import quote
 from urllib.request import urlopen
 
@@ -161,6 +162,7 @@ def create_app(runtime: Runtime, token: str) -> Flask:
                     "timezone": cfg.general.timezone,
                     "headless": cfg.general.headless,
                     "catch_up": cfg.general.catch_up,
+                    "auto_exit_after_run": cfg.general.auto_exit_after_run,
                     "browser_channel": cfg.general.browser_channel,
                     "auto_claim": cfg.basic.auto_claim,
                     "search_enabled": cfg.basic.search_enabled,
@@ -251,6 +253,7 @@ def create_app(runtime: Runtime, token: str) -> Flask:
                 "ok": True,
                 "settings": runtime.store.public(cfg),
                 "task_catalog": catalog_payload(),
+                "autostart": runtime.autostart.snapshot(),
             }
         )
 
@@ -267,15 +270,30 @@ def create_app(runtime: Runtime, token: str) -> Flask:
         except Exception as exc:
             log.exception("保存设置失败")
             return error(f"保存设置失败：{exc}", 500)
+        startup_warning: str | None = None
+        try:
+            startup_ok, startup_message = runtime.autostart.sync(
+                cfg.general.auto_exit_after_run
+            )
+            if startup_ok:
+                log.info("%s", startup_message)
+            else:
+                startup_warning = startup_message
+                log.warning("%s", startup_message)
+        except Exception as exc:
+            startup_warning = f"开机启动登记失败：{str(exc)[:240]}"
+            log.exception("同步开机启动失败")
         runtime.scheduler.restart()
         log.info("界面已保存设置。")
-        return jsonify(
-            {
-                "ok": True,
-                "settings": runtime.store.public(cfg),
-                "task_catalog": catalog_payload(),
-            }
-        )
+        payload = {
+            "ok": True,
+            "settings": runtime.store.public(cfg),
+            "task_catalog": catalog_payload(),
+            "autostart": runtime.autostart.snapshot(),
+        }
+        if startup_warning:
+            payload["warning"] = startup_warning
+        return jsonify(payload)
 
     @app.get("/api/onboarding")
     def onboarding_status():
@@ -822,6 +840,79 @@ def _open_when_ready(
     return True
 
 
+def _auto_exit_after_schedule(
+    runtime: Runtime,
+    log: logging.Logger,
+    request_shutdown: Callable[[str], tuple[bool, str]],
+    tray_ref: list[TrayController],
+    *,
+    trigger: str,
+    ok: bool,
+    message: str,
+    settle_seconds: float = 2.0,
+) -> bool:
+    """定时任务结束后，按设置优雅地退出整个后台进程。
+
+    只在 trigger=schedule 时生效；手动运行不会让程序退出。
+    """
+
+    if trigger != "schedule":
+        return False
+    try:
+        cfg = runtime.store.load()
+    except Exception:
+        log.exception("读取配置失败，跳过每日自动退出。")
+        return False
+    if not cfg.general.auto_exit_after_run:
+        return False
+
+    if not ok:
+        # 失败时保留托盘和后台，方便重新登录或手动重跑；成功跑完才退出。
+        log.info(
+            "每日定时任务有错误，保留后台便于排查；成功完成后才会按设置自动退出。"
+        )
+        if tray_ref:
+            try:
+                tray_ref[0].notify(
+                    "每日任务有错误，已保留后台；请打开控制台查看日志。"
+                )
+            except Exception:
+                log.debug("发送任务失败托盘提示失败", exc_info=True)
+        return False
+
+    log.info(
+        "每日定时任务已成功结束，auto_exit_after_run 已开启，准备退出后台进程。"
+    )
+    deadline = time.monotonic() + 90
+    while runtime.job.running and time.monotonic() < deadline:
+        time.sleep(0.5)
+    if runtime.job.running:
+        log.warning("任务线程未在 90 秒内结束，取消本次自动退出。")
+        return False
+    if settle_seconds > 0:
+        time.sleep(settle_seconds)
+
+    if tray_ref:
+        try:
+            tray_ref[0].notify(
+                "每日任务已结束，Rewards Pilot 即将退出；下次开机将自动启动。"
+            )
+        except Exception:
+            log.debug("发送自动退出托盘提示失败", exc_info=True)
+
+    exit_message = "自动退出尚未执行。"
+    for _ in range(3):
+        exit_ok, exit_message = request_shutdown(
+            "每日定时任务已结束，按设置自动退出。"
+        )
+        if exit_ok:
+            log.info("自动退出已请求：%s", exit_message)
+            return True
+        time.sleep(1.0)
+    log.warning("自动退出未成功：%s", exit_message)
+    return False
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=APP_NAME,
@@ -832,6 +923,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--no-browser", action="store_true", help="只启动后端，不打开应用窗口")
     parser.add_argument("--no-tray", action="store_true", help="不创建系统托盘图标")
     parser.add_argument("--no-scheduler", action="store_true", help="启动时不自动开启每日调度")
+    parser.add_argument(
+        "--autostart",
+        action="store_true",
+        help="由 Windows 开机启动调用：驻留托盘，不主动打开控制台窗口",
+    )
     return parser
 
 
@@ -864,6 +960,43 @@ def main(argv: list[str] | None = None) -> int:
         log.exception("读取初始化教程状态失败，将暂缓自动调度。")
         first_run = True
 
+    token = secrets.token_urlsafe(24)
+    app = create_app(runtime, token)
+    stop_event: threading.Event = app.extensions["stop_event"]
+    tray_ref: list[TrayController] = []
+
+    # 配置是唯一事实来源：开启时补登记/修复路径，关闭时清理旧启动项。
+    try:
+        startup_ok, startup_message = runtime.autostart.sync(
+            cfg.general.auto_exit_after_run
+        )
+        if startup_ok:
+            if cfg.general.auto_exit_after_run:
+                log.info("自动退出已开启，%s", startup_message)
+        else:
+            log.warning("同步开机启动状态失败：%s", startup_message)
+    except Exception:
+        log.exception("同步开机启动状态失败")
+
+    if args.autostart:
+        log.info("以开机自启模式启动：驻留系统托盘，不主动打开控制台窗口。")
+
+    requester = app.extensions.get("request_shutdown")
+    if requester is not None:
+
+        def on_job_finished(trigger: str, job_ok: bool, job_message: str) -> None:
+            if trigger != "schedule":
+                return
+            threading.Thread(
+                target=_auto_exit_after_schedule,
+                args=(runtime, log, requester, tray_ref),
+                kwargs={"trigger": trigger, "ok": job_ok, "message": job_message},
+                name="rewards-auto-exit",
+                daemon=True,
+            ).start()
+
+        runtime.job.add_finished_listener(on_job_finished)
+
     if not args.no_scheduler:
         if first_run:
             log.info(
@@ -875,9 +1008,6 @@ def main(argv: list[str] | None = None) -> int:
             if not ok:
                 log.warning("自动启动调度失败：%s", message)
 
-    token = secrets.token_urlsafe(24)
-    app = create_app(runtime, token)
-    stop_event: threading.Event = app.extensions["stop_event"]
     port = find_free_port(args.port)
     url = f"http://127.0.0.1:{port}"
     try:
@@ -934,6 +1064,7 @@ def main(argv: list[str] | None = None) -> int:
                 tray_started = candidate.start()
                 if tray_started:
                     tray = candidate
+                    tray_ref.append(candidate)
                 else:
                     log.warning("系统托盘不可用，关闭窗口仍会结束程序。")
             except Exception:
@@ -947,7 +1078,11 @@ def main(argv: list[str] | None = None) -> int:
         exit_on_close=not tray_started,
     )
     console_ref.append(console)
-    if not args.no_browser:
+    if not args.no_browser and not args.autostart:
+        console.open()
+    elif args.autostart and not args.no_browser and not tray_started:
+        # 开机自启且托盘不可用时，必须留一个能操作界面的入口，避免成为纯后台幽灵进程。
+        log.warning("开机自启时系统托盘不可用，改为打开控制台窗口。")
         console.open()
 
     try:
@@ -958,6 +1093,7 @@ def main(argv: list[str] | None = None) -> int:
     except KeyboardInterrupt:
         log.info("收到 Ctrl+C，正在退出。")
     finally:
+        tray_ref.clear()
         if tray is not None:
             tray.stop()
         try:

@@ -14,6 +14,7 @@ import {
   Leaf,
   ListChecks,
   Loader2,
+  Monitor,
   Power,
   RotateCcw,
   Save,
@@ -34,6 +35,7 @@ function toForm(settings) {
       mode: settings.general.mode,
       headless: Boolean(settings.general.headless),
       catch_up: Boolean(settings.general.catch_up),
+      auto_exit_after_run: Boolean(settings.general.auto_exit_after_run),
     },
     basic: {
       max_tasks: String(settings.basic.max_tasks),
@@ -146,6 +148,7 @@ export default function Settings({
   onShowOnboarding,
 }) {
   const [settings, setSettings] = useState(null);
+  const [autostart, setAutostart] = useState({});
   const [catalog, setCatalog] = useState(null);
   const [form, setForm] = useState(null);
   const [baseline, setBaseline] = useState(null);
@@ -166,6 +169,7 @@ export default function Settings({
     try {
       const data = await api.settings();
       setSettings(data.settings);
+      setAutostart(data.autostart || {});
       setCatalog(data.task_catalog || null);
       const next = toForm(data.settings);
       setForm(next);
@@ -265,6 +269,7 @@ export default function Settings({
           mode: form.general.mode,
           headless: form.general.headless,
           catch_up: form.general.catch_up,
+          auto_exit_after_run: form.general.auto_exit_after_run,
         },
         basic: {
           max_tasks: Number(form.basic.max_tasks),
@@ -290,6 +295,7 @@ export default function Settings({
 
       const data = await api.saveSettings(payload);
       setSettings(data.settings);
+      setAutostart(data.autostart || {});
       if (data.task_catalog) setCatalog(data.task_catalog);
       const next = toForm(data.settings);
       setForm(next);
@@ -298,11 +304,13 @@ export default function Settings({
       setClearKey(false);
       onSaved?.(data.settings);
       onToast({
-        tone: "success",
-        title: "设置已保存",
-        message: state?.scheduler?.running
-          ? "配置文件已原子写入，每日调度已按新配置重启。"
-          : "配置文件已原子写入，新参数已生效。",
+        tone: data.warning ? "error" : "success",
+        title: data.warning ? "设置已保存，开机自启未生效" : "设置已保存",
+        message:
+          data.warning ||
+          (state?.scheduler?.running
+            ? "配置文件已原子写入，每日调度已按新配置重启。"
+            : "配置文件已原子写入，新参数已生效。"),
       });
     } catch (error) {
       onToast({ tone: "error", title: "保存失败", message: error.message });
@@ -512,7 +520,39 @@ export default function Settings({
                 checked={form.general.headless}
                 onChange={(value) => update("general", "headless", value)}
               />
+              <ToggleRow
+                icon={Power}
+                title="每日跑完自动退出（自动开机自启）"
+                hint="开启时自动登记 Windows 当前用户的开机启动。每日定时任务成功后，程序会关闭托盘与后台；本次有错误时会保留后台便于排查。手动运行不触发退出。需要每日调度处于开启状态。"
+                checked={form.general.auto_exit_after_run}
+                onChange={(value) =>
+                  update("general", "auto_exit_after_run", value)
+                }
+                tone={
+                  form.general.auto_exit_after_run && !autostart.matches
+                    ? "warn"
+                    : ""
+                }
+              />
             </div>
+            {form.general.auto_exit_after_run ? (
+              <div
+                className={`startup-note ${
+                  autostart.matches ? "is-ok" : "is-warn"
+                }`}
+              >
+                <Monitor size={14} />
+                <span>
+                  {autostart.supported === false
+                    ? "当前系统不是 Windows，开机启动不会生效。"
+                    : autostart.matches
+                      ? "Windows 启动项已登记，下次登录会自动在系统托盘待命。"
+                      : autostart.error
+                        ? autostart.error
+                        : "启动项尚未登记或路径已变化，保存设置后会自动修复。"}
+                </span>
+              </div>
+            ) : null}
           </SettingsSection>
 
           <SettingsSection
@@ -774,6 +814,23 @@ export default function Settings({
                 <dt>低功耗挂机</dt>
                 <dd className={powerState.enabled ? "is-eco" : ""}>
                   {powerState.enabled ? "已开启" : "未开启"}
+                </dd>
+              </div>
+              <div>
+                <dt>开机自启</dt>
+                <dd
+                  className={autostart.matches ? "is-eco" : ""}
+                  title={autostart.error || undefined}
+                >
+                  {autostart.supported === false
+                    ? "仅 Windows"
+                    : autostart.matches
+                      ? "已登记"
+                      : autostart.error
+                        ? "状态未知"
+                        : autostart.registered
+                          ? "路径待修复"
+                          : "未登记"}
                 </dd>
               </div>
               <div>

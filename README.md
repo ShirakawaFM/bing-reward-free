@@ -32,6 +32,8 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 
 > EXE 未签名，Windows SmartScreen 可能提示“未知发布者”；仅在确认来源可信时选择“更多信息 → 仍要运行”。也可以直接 `git clone` 本仓库。
 >
+> **下载版暂未包含最新功能**：已发布的 `v1.0.0` 附件早于「开机自启 / 每日跑完自动退出」提交，不包含该开关；想立即使用请从当前源码运行或自行构建，详见文末「Release 内容与校验」。
+>
 > EXE 需要放在**可写目录**（桌面、文档等），不要放进 `Program Files` 或压缩包里直接运行。EXE **不内置浏览器**，使用系统自带的 Edge；换机器时重新登录即可。
 
 ---
@@ -67,6 +69,7 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 | 🪟 **任务浏览器专属图标** | 自动打开的 Edge 任务窗口使用独立窗口图标，任务栏按钮叠加闪电徽标；不影响你现有的 Edge 窗口 |
 | 🔋 **低功耗 7 天挂机** | 节能计划 + 空闲优先级 + EcoQoS + 阻止空闲休眠，可选白名单清理；程序始终保持单实例 |
 | 📌 **托盘常驻** | 左键打开控制台；右键可立即运行、暂停调度、切换低功耗、打开日志文件夹或退出 |
+| 🌅 **开机自启 + 跑完退出** | 开启一个开关，同时登记 Windows 当前用户启动项；每日定时任务成功后自动关闭托盘与后端，下次登录再回到托盘 |
 | 🔒 **本地优先** | 后端只监听 `127.0.0.1` 并使用一次性令牌；登录态、日志、截图不出本机；API Key 不写日志 |
 
 <img src="assets/flow.svg?v=2" alt="一次运行的五步：打开仪表盘 → 扫描任务 → 规则或模型决策 → 浏览与作答 → 只领取 Claim" width="100%" />
@@ -129,6 +132,7 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 - **四步快速设置**：首次运行依次引导登录、模式、任务与运行时间，每页一句大字标题、少量说明、全部可跳过。跳过不写配置；只有最后一步保存改动，开启调度时不会补跑当天。
 - **在界面里完成**：登录、立即运行、暂停/开启每日调度、编辑配置、环境自检、退出应用。
 - **系统托盘**：启动后常驻通知区域。左键重新打开控制台；右键可立即运行（带确认框）、暂停/开启每日调度、切换低功耗挂机、打开日志文件夹或退出。关闭控制台窗口不会退出程序。
+- **开机自启与跑完退出**：设置里的一个开关同时完成两件事——把程序登记到 Windows 当前用户的开机启动项，并在每日定时任务成功结束后关闭托盘与后端进程。开机登录后程序直接驻留托盘、不弹控制台；手动运行、失败的运行都不会触发退出，失败时会保留后台方便排查。
 - **实时日志与运行截图**：按级别筛选/搜索日志，按任务批次查看关键页面截图。
 - **任务清单勾选**：设置页按分组列出 23 种任务类型。11 种基础卡片可逐项勾选；4 种仅进阶 AI、6 种需人工处理的类型会显示但保持锁定。没勾选的卡片不会被打开。
 - **首页积分预估**：按当前任务勾选、搜索和自动领取开关，用大字给出每日 / 每周的本地估算区间；同时显示还有哪些任务未启用、全部开启后能多拿多少。点击“还有提升空间”会直接跳到设置里未勾选的选项，并滚动、高亮对应卡片。
@@ -394,6 +398,7 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 | `state_dir` | `state` | 调度状态、截图目录 |
 | `log_dir` | `logs` | 日志目录 |
 | `catch_up` | `true` | 启动时若今天已过运行时间且尚未运行，立即补跑一次 |
+| `auto_exit_after_run` | `false` | 每日定时任务成功结束后退出，并登记当前用户的开机启动项；需同时开启每日调度 |
 
 ### `[basic]`
 
@@ -441,6 +446,18 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 - 从托盘重新开启调度时不会补跑，直接等待下一个计划时间；这样一次误点不会立刻启动真实任务。
 - 保存设置时，如果调度正在运行，会按新配置自动重启调度。
 - 要彻底结束程序，请右键托盘图标选择“退出 Rewards Pilot”，或在“设置 → 配置中心 → 退出应用”显式结束。
+
+#### 可选：跑完自动退出与开机自启
+
+在 **设置 → 基础任务** 打开“每日跑完自动退出（自动开机自启）”后，两项行为绑定生效：
+
+- 程序会向 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` 写入名为 `Rewards Pilot` 的启动项，只对当前 Windows 用户生效，**不需要管理员权限，也不会创建计划任务**。
+- 打包版登记 EXE 自身；源码版优先登记 `.venv\Scripts\pythonw.exe desktop.py`。两者都会带上 `--autostart --config <当前配置文件>`，确保开机后使用同一份配置。
+- 开机登录时程序直接驻留系统托盘，不主动弹出控制台窗口；如果托盘不可用，会退回打开控制台，避免出现没有入口的后台进程。
+- 只有 **每日调度** 触发且 **运行成功** 的任务才会自动退出：先给出托盘提示，等待任务线程收尾后关闭托盘、后端与调度器。手动“立即运行”和托盘“立即运行一次”不会触发退出。
+- 本次运行失败时会 **保留后台** 并给出托盘提示，方便查看日志与截图；修好后可手动再跑，或等下一次定时。
+- 关闭开关会立即删除启动项；每次启动也会按配置校正一次：路径变了会修复，开关关了会清理残留项。
+- `state/last_run.json` 的去重仍然生效：同一天不会因为重新登录而重复补跑。它发生在 **Windows 用户登录时**，不是 BIOS 开机；如果电脑 24 小时不关机也不注销，退出后当天不会自己再出现。
 
 ### 方式 B：命令行常驻（源码版）
 
@@ -531,6 +548,7 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 
 - TOML 配置解析、环境变量 Key 回退、非法时间/模式、相对路径、调度器日期计算。
 - 初始化教程：首次显示、完成/跳过标记、损坏或旧版本标记重新显示、接口写入与非法动作拒绝、`/api/state` 不泄露 Key、首次运行暂缓自动调度；以及调度启动接口可选 `catch_up=false`、非法值被拒绝。
+- 开机自启与跑完退出：源码版/打包版启动命令生成、注册表登记与删除的幂等、路径不匹配检测、仅“调度成功”触发退出、手动运行与失败运行不退出、任务完成监听、配置写回，以及设置接口开关联动启动项。
 - 安全标签/链接拦截、域名判断、仪表盘 URL 判断、密码框拦截。
 - LLM JSON 解析（普通 JSON、Markdown 围栏、坏 JSON）。
 - Agent 动作归一化与边界裁剪。
@@ -555,6 +573,7 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 .venv\Scripts\python.exe -m unittest tests.test_agent_offline -v
 .venv\Scripts\python.exe -m unittest tests.test_tasks_catalog -v
 .venv\Scripts\python.exe -m unittest tests.test_onboarding -v
+.venv\Scripts\python.exe -m unittest tests.test_autostart -v
 .venv\Scripts\python.exe -m unittest tests.test_power_mode -v
 .venv\Scripts\python.exe -m unittest tests.test_single_instance -v
 .venv\Scripts\python.exe -m unittest tests.test_window_branding -v
@@ -562,7 +581,7 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 .venv\Scripts\python.exe -m unittest tests.test_console_window -v
 ```
 
-低功耗测试通过模拟系统电源调用检查切换参数与恢复逻辑，不会真正切换测试机的电源计划；单实例测试会临时启动两个 Python 子进程；图标测试只检查本地资源和窗口筛选逻辑，不会修改任何已打开的浏览器窗口；托盘测试使用假运行时，不创建托盘、不启动浏览器，也不访问账号。
+低功耗测试通过模拟系统电源调用检查切换参数与恢复逻辑，不会真正切换测试机的电源计划；单实例测试会临时启动两个 Python 子进程；图标测试只检查本地资源和窗口筛选逻辑，不会修改任何已打开的浏览器窗口；托盘测试使用假运行时，不创建托盘、不启动浏览器，也不访问账号。开机自启测试会把注册表读写替换为模拟对象，不会改动真实的启动项；自动退出测试使用假的调度结果，也不会启动浏览器。
 
 编译检查：
 
@@ -584,6 +603,14 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 **关闭控制台窗口后，每日任务还会继续吗？**
 
 会。Windows 上托盘可用时，关闭控制台只是把窗口收起来，后端、调度器和低功耗挂机继续运行；单击托盘图标即可重新打开。要结束程序，请右键托盘图标选择“退出 Rewards Pilot”，或在设置页点“退出应用”；退出时会恢复原电源计划，如果任务正在运行会等它结束（最多 15 分钟）。若托盘创建失败或启动时加了 `--no-tray`，关闭窗口仍会退出。
+
+**开了“每日跑完自动退出”，第二天会自动启动吗？**
+
+会在下一次 **Windows 用户登录** 时自动启动，并留在系统托盘；它不会退出后常驻内存等待第二天。若电脑整夜不关机、也不注销或重新登录，程序退出后不会自己回来。需要这种场景时，请改用任务计划程序每天触发（方式 C），或不要开启自动退出。另外，只有每日调度触发且运行成功才会退出；手动运行、运行失败都会保留程序。
+
+**为什么运行失败后没有自动退出？**
+
+这是有意的：失败通常意味着登录失效、验证码、页面改版或网络问题，直接退出会丢失现场。程序会保留托盘和后端，并弹出托盘提示；你可以打开日志和运行截图排查，修好后手动再跑，或等下一次定时。
 
 **托盘图标在哪里？右键有哪些选项？**
 
@@ -711,6 +738,7 @@ bing-rewards-bot/
 │  ├─ services.py           # 任务 / 登录 / 调度线程服务
 │  ├─ power_mode.py         # 低功耗挂机、电源计划恢复、白名单清理
 │  ├─ onboarding.py         # 首次运行教程状态（state/onboarding.json）
+│  ├─ autostart.py          # 当前用户开机启动项、命令生成与状态校正
 │  ├─ settings_store.py     # 配置读取、校验、原子写入
 │  └─ log_buffer.py         # 实时日志环形缓冲
 ├─ rewards_bot/
@@ -753,6 +781,7 @@ bing-rewards-bot/
 │  ├─ test_config.py
 │  ├─ test_guards.py
 │  ├─ test_onboarding.py    # 教程状态、接口与首次运行安全行为
+│  ├─ test_autostart.py     # 开机自启、启动命令与跑完自动退出（模拟注册表）
 │  ├─ test_tasks_catalog.py # 任务目录、归类与配置校验
 │  ├─ test_window_branding.py # 浏览器图标资源与窗口筛选
 │  ├─ test_power_mode.py    # 电源计划、恢复、白名单清理（模拟命令）
@@ -780,6 +809,8 @@ bing-rewards-bot/
 - 自动搜索默认关闭，且即使打开也可能被判定为异常流量。
 - 进阶模式依赖模型输出质量；元素索引和页面文字会增加 token 消耗。
 - 低功耗挂机只能降低系统电源计划和本程序自身的开销，并可选关闭白名单应用；不会冻结所有进程，也不保证连续 7 天不中断。
+- 开机自启只在 **当前 Windows 用户登录时** 触发，不创建计划任务，也不申请管理员权限。电脑长期不关机、不注销也不重新登录时，自动退出后当天不会再次自动出现。
+- 自动退出只在 **每日调度触发且运行成功** 时发生；运行失败或手动运行都会保留后台。重启后能否补跑仍受 `catch_up` 和 `state/last_run.json` 控制。
 - 不处理验证码、人机验证、账号安全验证，也不绕过任何限制。
 - 本项目仅用于学习浏览器自动化与 LLM 页面操作，不提供任何形式的账号或积分保证。
 
@@ -852,6 +883,7 @@ cd ..
 - EXE 图标来自 `assets/app.ico`，任务浏览器窗口图标来自 `assets/task-browser.ico`；版本信息来自 `packaging/version_info.txt`。这些只在重新构建时使用。
 - EXE 采用窗口模式（无控制台）。启动崩溃会写入同目录的 `logs/gui-crash.log`。
 - 单文件包必须放在可写目录；程序首次运行会把示例配置和搜索词表复制到 exe 旁边。
+- 开机自启项指向 EXE 的绝对路径。移动或重命名 EXE 后，下次启动会按新路径自动校正；如果移动后还没启动过，请先手动打开一次。
 - 如果修改了前端，需要重新执行 `npm run build` 后再打包，否则 EXE 里仍是旧页面。
 
 ---
@@ -876,6 +908,8 @@ SHA256：3df22587f8b4ba82ac1b3641e54c323bfc9d1d60aabd6fb9edc7cf92df4f55d9
 
 > 源码包是构建这个 EXE 的同一份代码快照。EXE 由本机 PyInstaller 6.22.3 构建，不是 CI 产物；重新构建的二进制不会与官方附件逐字节一致，但源码、依赖清单与构建步骤都包含在源码包中。
 
+> **版本说明**：开机自启与「每日跑完自动退出」是在 `v1.0.0` 发布后新增的功能，**不包含在已发布的 v1.0.0 EXE 与源码包中**；v1.0.0 的附件和 SHA256 保持不变。想立即使用该功能，请从当前源码运行或自行构建；后续新版本会同步更新附件与校验值。
+
 ---
 
 ## 许可证与免责声明
@@ -888,6 +922,6 @@ SHA256：3df22587f8b4ba82ac1b3641e54c323bfc9d1d60aabd6fb9edc7cf92df4f55d9
 
 ## English / English Summary
 
-**Bing-reward FREE** is a local-first Windows desktop assistant for Microsoft Rewards daily tasks. It reuses your local Edge session, opens the Rewards dashboard on a schedule, completes common quiz / poll / read cards with built-in heuristics, and claims only explicit “Claim” rewards. An optional advanced mode sends an indexed list of up to 140 interactive elements to DeepSeek (or any OpenAI-compatible endpoint) for step-by-step decisions, with domain and high-risk-text guards. Everything runs on `127.0.0.1`; cookies, logs, screenshots and API keys stay on your machine. It is not affiliated with Microsoft, and automating Rewards may violate Microsoft's terms of service. Use at your own risk. Requires Windows 10/11 and Edge; the release EXE is unsigned.
+**Bing-reward FREE** is a local-first Windows desktop assistant for Microsoft Rewards daily tasks. It reuses your local Edge session, opens the Rewards dashboard on a schedule, completes common quiz / poll / read cards with built-in heuristics, and claims only explicit “Claim” rewards. An optional advanced mode sends an indexed list of up to 140 interactive elements to DeepSeek (or any OpenAI-compatible endpoint) for step-by-step decisions, with domain and high-risk-text guards. An optional one-switch mode registers the app for the current Windows user's startup and exits the tray and backend after a successful scheduled run; manual runs and failed runs keep it alive. Everything runs on `127.0.0.1`; cookies, logs, screenshots and API keys stay on your machine. It is not affiliated with Microsoft, and automating Rewards may violate Microsoft's terms of service. Use at your own risk. Requires Windows 10/11 and Edge; the release EXE is unsigned.
 
 <img src="assets/footer.svg" alt="ShirakawaFM / 白川方明" width="100%" />

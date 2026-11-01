@@ -259,6 +259,11 @@ class TrayController:
         except Exception:
             LOG.debug("刷新托盘菜单失败", exc_info=True)
 
+    def notify(self, message: str) -> None:
+        """供后台流程（例如每日任务结束自动退出）发送托盘提示。"""
+
+        self._notify(message)
+
     def _notify(self, message: str) -> None:
         icon = self._icon
         if icon is None or not message:

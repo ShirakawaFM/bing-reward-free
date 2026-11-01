@@ -388,6 +388,13 @@ export default function Overview({
             ) : (
               <p className="plan-date">程序需要保持运行，到点后自动打开浏览器。</p>
             )}
+            {summary.auto_exit_after_run ? (
+              <p className="plan-date">
+                {schedRunning
+                  ? "成功后自动退出 · 下次开机自动回到系统托盘"
+                  : "已开启自动退出 · 需同时开启每日调度才会生效"}
+              </p>
+            ) : null}
           </section>
 
           <section className="card side-card account-card">
