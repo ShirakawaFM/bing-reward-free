@@ -8,7 +8,7 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 
 简体中文 · [English](#english--english-summary)
 
-[![Version](https://img.shields.io/badge/version-1.0.0-5EEAD4?style=flat-square&logo=github&logoColor=white)](https://github.com/ShirakawaFM/bing-reward-free/releases) [![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE) [![Windows](https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows) [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/) [![Playwright](https://img.shields.io/badge/Playwright-1.64-2EAD33?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev/) [![DeepSeek](https://img.shields.io/badge/DeepSeek-%E5%8F%AF%E9%80%89-4D6BFE?style=flat-square)](https://www.deepseek.com/) [![Stars](https://img.shields.io/github/stars/ShirakawaFM/bing-reward-free?style=social&label=Stars)](https://github.com/ShirakawaFM/bing-reward-free/stargazers)
+[![Version](https://img.shields.io/badge/version-1.0.1-5EEAD4?style=flat-square&logo=github&logoColor=white)](https://github.com/ShirakawaFM/bing-reward-free/releases) [![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE) [![Windows](https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows) [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/) [![Playwright](https://img.shields.io/badge/Playwright-1.64-2EAD33?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev/) [![DeepSeek](https://img.shields.io/badge/DeepSeek-%E5%8F%AF%E9%80%89-4D6BFE?style=flat-square)](https://www.deepseek.com/) [![Stars](https://img.shields.io/github/stars/ShirakawaFM/bing-reward-free?style=social&label=Stars)](https://github.com/ShirakawaFM/bing-reward-free/stargazers)
 
 作者：**ShirakawaFM / 白川方明**
 
@@ -26,13 +26,11 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 
 | 包 | 内容 | 适合谁 | 下载 |
 | --- | --- | --- | --- |
-| **Windows 成品版** | 单文件 EXE，内置后端、React 控制台与 Playwright 驱动 | 不想装 Python，双击就用 | [Bing-reward-FREE-v1.0.0-win64.exe](https://github.com/ShirakawaFM/bing-reward-free/releases/download/v1.0.0/Bing-reward-FREE-v1.0.0-win64.exe) |
-| **原版代码** | 完整源码、构建脚本、测试与文档，不含登录态和配置 | 想阅读、修改或自行构建 | [Bing-reward-FREE-v1.0.0-source.zip](https://github.com/ShirakawaFM/bing-reward-free/releases/download/v1.0.0/Bing-reward-FREE-v1.0.0-source.zip) |
-| **校验和** | 上面两个文件的 SHA256 | 下载后核对完整性 | [SHA256SUMS.txt](https://github.com/ShirakawaFM/bing-reward-free/releases/download/v1.0.0/SHA256SUMS.txt) |
+| **Windows 成品版** | 单文件 EXE，内置后端、React 控制台与 Playwright 驱动 | 不想装 Python，双击就用 | [Bing-reward-FREE-v1.0.1-win64.exe](https://github.com/ShirakawaFM/bing-reward-free/releases/download/v1.0.1/Bing-reward-FREE-v1.0.1-win64.exe) |
+| **原版代码** | 完整源码、构建脚本、测试与文档，不含登录态和配置 | 想阅读、修改或自行构建 | [Bing-reward-FREE-v1.0.1-source.zip](https://github.com/ShirakawaFM/bing-reward-free/releases/download/v1.0.1/Bing-reward-FREE-v1.0.1-source.zip) |
+| **校验和** | 上面两个文件的 SHA256 | 下载后核对完整性 | [SHA256SUMS.txt](https://github.com/ShirakawaFM/bing-reward-free/releases/download/v1.0.1/SHA256SUMS.txt) |
 
 > EXE 未签名，Windows SmartScreen 可能提示“未知发布者”；仅在确认来源可信时选择“更多信息 → 仍要运行”。也可以直接 `git clone` 本仓库。
->
-> **下载版暂未包含最新功能**：已发布的 `v1.0.0` 附件早于「开机自启 / 每日跑完自动退出」提交，不包含该开关；想立即使用请从当前源码运行或自行构建，详见文末「Release 内容与校验」。
 >
 > EXE 需要放在**可写目录**（桌面、文档等），不要放进 `Program Files` 或压缩包里直接运行。EXE **不内置浏览器**，使用系统自带的 Edge；换机器时重新登录即可。
 
@@ -894,21 +892,21 @@ cd ..
 
 | 附件 | 说明 |
 | --- | --- |
-| `Bing-reward-FREE-v1.0.0-win64.exe` | Windows 10/11 单文件成品。内置 Python 后端、`web/dist` 前端和 Playwright 驱动；需要系统 Edge，不内置浏览器 |
-| `Bing-reward-FREE-v1.0.0-source.zip` | 由 `v1.0.0` 提交的 Git 树直接导出的源码包，包含前端源码与构建产物、测试与文档；不包含 `config.toml`、`.browser-profile`、`state/`、`logs/` 或任何 Key |
+| `Bing-reward-FREE-v1.0.1-win64.exe` | Windows 10/11 单文件成品。内置 Python 后端、`web/dist` 前端和 Playwright 驱动；需要系统 Edge，不内置浏览器 |
+| `Bing-reward-FREE-v1.0.1-source.zip` | 由 `v1.0.1` 提交的 Git 树直接导出的源码包，包含前端源码与构建产物、测试与文档；不包含 `config.toml`、`.browser-profile`、`state/`、`logs/` 或任何 Key |
 | `SHA256SUMS.txt` | 两个附件的 SHA256，下载后可用 `certutil -hashfile <文件> SHA256` 核对 |
 
 本版 EXE 信息：
 
 ```text
-文件名：Bing-reward-FREE-v1.0.0-win64.exe
-大小：60,441,094 字节
-SHA256：3df22587f8b4ba82ac1b3641e54c323bfc9d1d60aabd6fb9edc7cf92df4f55d9
+文件名：Bing-reward-FREE-v1.0.1-win64.exe
+大小：60,449,616 字节
+SHA256：26968b23bedfe9fb3219c9f8e7ab7c8f7e2a540d361193c11e1bd5a3fdf3cbdc
 ```
 
 > 源码包是构建这个 EXE 的同一份代码快照。EXE 由本机 PyInstaller 6.22.3 构建，不是 CI 产物；重新构建的二进制不会与官方附件逐字节一致，但源码、依赖清单与构建步骤都包含在源码包中。
 
-> **版本说明**：开机自启与「每日跑完自动退出」是在 `v1.0.0` 发布后新增的功能，**不包含在已发布的 v1.0.0 EXE 与源码包中**；v1.0.0 的附件和 SHA256 保持不变。想立即使用该功能，请从当前源码运行或自行构建；后续新版本会同步更新附件与校验值。
+> **版本说明**：`v1.0.1` 新增「开机自启 + 每日定时成功跑完后自动退出」；失败运行会保留后台便于排查。`v1.0.0` 的附件仍保留在旧 Release 中，但不再推荐下载。
 
 ---
 

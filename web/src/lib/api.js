@@ -4,7 +4,7 @@ export const APP_TOKEN =
   window.__APP_TOKEN__ || query.get("token") || "";
 
 export const APP_VERSION =
-  window.__APP_VERSION__ || "1.0.0";
+  window.__APP_VERSION__ || "1.0.1";
 
 async function request(path, { method = "GET", body, signal } = {}) {
   const headers = { "X-App-Token": APP_TOKEN };

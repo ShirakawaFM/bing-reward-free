@@ -35,7 +35,7 @@ from .settings_store import SettingsError, SettingsStore
 from .tray import TrayActions, TrayController
 
 APP_NAME = "Rewards Pilot"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 TOKEN_HEADER = "X-App-Token"
 _SAFE_NAME = re.compile(r"^[A-Za-z0-9_.-]+$")
 
