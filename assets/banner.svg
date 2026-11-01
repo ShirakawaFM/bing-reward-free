@@ -1,138 +1,171 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="560" viewBox="0 0 1600 560" role="img" aria-labelledby="banner-title banner-desc">
-  <title id="banner-title">Bing-reward FREE</title>
-  <desc id="banner-desc">Bing-reward FREE：把每日 Rewards 任务交给自动巡航。Windows 桌面端，基础规则或 DeepSeek 进阶，React 控制台，Playwright 浏览器自动化。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-label="Bing-reward FREE：把每日 Rewards 任务交给自动巡航">
+  <title>Bing-reward FREE · 每日 Rewards 自动巡航</title>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#060b14"/>
-      <stop offset=".5" stop-color="#08111f"/>
-      <stop offset="1" stop-color="#05080f"/>
+    <linearGradient id="rbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#061428"/>
+      <stop offset="0.55" stop-color="#08203C"/>
+      <stop offset="1" stop-color="#0A2A4A"/>
     </linearGradient>
-    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#f8fafc"/>
-      <stop offset="1" stop-color="#d7fff7"/>
-    </linearGradient>
-    <linearGradient id="free" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#5eead4"/>
-      <stop offset=".55" stop-color="#7dd3fc"/>
-      <stop offset="1" stop-color="#c4b5fd"/>
-    </linearGradient>
-    <linearGradient id="card-stroke" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#5eead4" stop-opacity=".55"/>
-      <stop offset=".55" stop-color="#38bdf8" stop-opacity=".14"/>
-      <stop offset="1" stop-color="#a78bfa" stop-opacity=".45"/>
-    </linearGradient>
-    <linearGradient id="bolt" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#5eead4"/>
-      <stop offset="1" stop-color="#a78bfa"/>
-    </linearGradient>
-    <radialGradient id="mint-glow" cx=".5" cy=".5" r=".5">
-      <stop offset="0" stop-color="#2dd4bf" stop-opacity=".5"/>
-      <stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/>
+    <radialGradient id="rglow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#4C8DFF" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#4C8DFF" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="violet-glow" cx=".5" cy=".5" r=".5">
-      <stop offset="0" stop-color="#a78bfa" stop-opacity=".48"/>
-      <stop offset="1" stop-color="#a78bfa" stop-opacity="0"/>
+    <radialGradient id="rglowGold" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFC46B" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#FFC46B" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="blue-glow" cx=".5" cy=".5" r=".5">
-      <stop offset="0" stop-color="#38bdf8" stop-opacity=".35"/>
-      <stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>
+    <radialGradient id="rglowMint" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#2BE8C4" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#2BE8C4" stop-opacity="0"/>
     </radialGradient>
-    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="42"/>
-    </filter>
-    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="12"/>
-    </filter>
-    <pattern id="grid" width="52" height="52" patternUnits="userSpaceOnUse">
-      <path d="M52 0H0V52" fill="none" stroke="#94a3b8" stroke-opacity=".06"/>
+    <linearGradient id="rtitle" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.58" stop-color="#E6F1FF"/>
+      <stop offset="1" stop-color="#7FB2FF"/>
+    </linearGradient>
+    <linearGradient id="rbar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9CC4FF"/>
+      <stop offset="0.55" stop-color="#4C8DFF"/>
+      <stop offset="1" stop-color="#2BE8C4"/>
+    </linearGradient>
+    <linearGradient id="rscan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4C8DFF" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#9CC4FF" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#4C8DFF" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="rdots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.5" fill="#2B4E78"/>
     </pattern>
-    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
-      <circle cx="2" cy="2" r="1" fill="#94a3b8" fill-opacity=".14"/>
-    </pattern>
-    <clipPath id="card-clip">
-      <rect x="1008" y="92" width="512" height="376" rx="34"/>
+    <clipPath id="rwindow">
+      <rect x="806" y="92" width="404" height="258" rx="16"/>
     </clipPath>
   </defs>
 
-  <rect width="1600" height="560" fill="url(#bg)"/>
-  <rect width="1600" height="560" fill="url(#grid)"/>
-  <ellipse cx="250" cy="140" rx="340" ry="200" fill="url(#mint-glow)" filter="url(#blur)"/>
-  <ellipse cx="1420" cy="470" rx="360" ry="240" fill="url(#violet-glow)" filter="url(#blur)"/>
-  <ellipse cx="880" cy="40" rx="300" ry="130" fill="url(#blue-glow)" filter="url(#blur)"/>
-  <rect x="1008" y="92" width="512" height="376" fill="url(#dots)" clip-path="url(#card-clip)" opacity=".55"/>
+  <rect width="1280" height="420" fill="url(#rbg)"/>
+  <rect width="1280" height="420" fill="url(#rdots)" opacity="0.45"/>
+  <rect width="1280" height="420" fill="url(#rglow)"/>
+  <circle cx="1120" cy="330" r="180" fill="url(#rglowGold)"/>
+  <circle cx="880" cy="70" r="160" fill="url(#rglowMint)" opacity="0.8"/>
 
-  <!-- Brand mark -->
-  <g>
-    <rect x="80" y="58" width="54" height="54" rx="16" fill="#0c1a22" stroke="#5eead4" stroke-opacity=".35"/>
-    <path d="M111 68l-13 22h10l-5 18 17-25h-11z" fill="url(#bolt)"/>
-    <text x="152" y="83" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" letter-spacing=".6" fill="#e2e8f0">REWARDS PILOT</text>
-    <text x="152" y="103" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="11" letter-spacing="2.6" fill="#5eead4" fill-opacity=".8">LOCAL-FIRST AUTOMATION</text>
+  <rect x="0" y="0" width="6" height="420" fill="url(#rbar)"/>
+  <rect x="0" y="0" width="6" height="420" fill="#CFE2FF" opacity="0.3">
+    <animate attributeName="opacity" values="0.08;0.6;0.08" dur="3.4s" repeatCount="indefinite"/>
+  </rect>
+
+  <text x="74" y="88" fill="#7FB2FF" font-family="Consolas, 'Courier New', monospace" font-size="17" letter-spacing="4.5">SHIRAKAWAFM / BING-REWARD FREE</text>
+
+  <text y="196" font-family="'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif" font-size="70" font-weight="800" letter-spacing="-1">
+    <tspan x="72" fill="url(#rtitle)">Bing-reward FREE</tspan>
+  </text>
+
+  <text x="74" y="246" fill="#E8F2FF" font-family="'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="27" font-weight="700">把每日 Rewards 任务，交给自动巡航</text>
+  <text x="74" y="284" fill="#8FA9C9" font-family="'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="18">复用本机 Edge 登录态，基础规则开箱即用；进阶交给 DeepSeek 决策</text>
+
+  <g font-family="'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="16" font-weight="700">
+    <g>
+      <rect x="72" y="322" width="142" height="38" rx="19" fill="#0E2C4E" stroke="#2C5F9E"/>
+      <text x="94" y="347" fill="#CFE0FF">Windows 10/11</text>
+    </g>
+    <g>
+      <rect x="226" y="322" width="108" height="38" rx="19" fill="#0E2C4E" stroke="#2C5F9E"/>
+      <text x="248" y="347" fill="#CFE0FF">React 19</text>
+    </g>
+    <g>
+      <rect x="346" y="322" width="126" height="38" rx="19" fill="#0E2C4E" stroke="#2C5F9E"/>
+      <text x="368" y="347" fill="#CFE0FF">Playwright</text>
+    </g>
+    <g>
+      <rect x="484" y="322" width="152" height="38" rx="19" fill="#0E2C4E" stroke="#2C5F9E"/>
+      <text x="506" y="347" fill="#CFE0FF">DeepSeek 可选</text>
+    </g>
+    <g>
+      <rect x="648" y="322" width="128" height="38" rx="19" fill="#0E2C4E" stroke="#2C5F9E"/>
+      <text x="670" y="347" fill="#CFE0FF">低功耗挂机</text>
+    </g>
   </g>
 
-  <!-- Headline -->
-  <text x="80" y="236" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="84" font-weight="800" letter-spacing="-2.5" fill="url(#brand)">Bing-reward</text>
-  <text x="660" y="236" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="84" font-weight="800" letter-spacing="1" fill="url(#free)">FREE</text>
-  <text x="84" y="304" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="30" font-weight="600" fill="#dbeafe">把每日 Rewards 任务，交给自动巡航。</text>
-  <text x="84" y="342" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="17" fill="#94a3b8">Windows 桌面端 · 基础规则 / DeepSeek 元素索引 · 四步向导 · 托盘常驻 · 低功耗挂机</text>
-
-  <!-- Chips -->
-  <g font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="13" font-weight="600">
-    <rect x="82" y="382" width="128" height="34" rx="17" fill="#0b1726" stroke="#5eead4" stroke-opacity=".32"/>
-    <circle cx="103" cy="399" r="3.5" fill="#5eead4"/>
-    <text x="116" y="404" fill="#d1fae5">Windows 10/11</text>
-
-    <rect x="222" y="382" width="108" height="34" rx="17" fill="#0b1726" stroke="#7dd3fc" stroke-opacity=".30"/>
-    <circle cx="243" cy="399" r="3.5" fill="#7dd3fc"/>
-    <text x="256" y="404" fill="#dbeafe">React 19</text>
-
-    <rect x="342" y="382" width="126" height="34" rx="17" fill="#0b1726" stroke="#c4b5fd" stroke-opacity=".30"/>
-    <circle cx="363" cy="399" r="3.5" fill="#c4b5fd"/>
-    <text x="376" y="404" fill="#ede9fe">Playwright</text>
-
-    <rect x="480" y="382" width="164" height="34" rx="17" fill="#0b1726" stroke="#fbbf24" stroke-opacity=".26"/>
-    <circle cx="501" cy="399" r="3.5" fill="#fbbf24"/>
-    <text x="514" y="404" fill="#fef3c7">DeepSeek 可选</text>
+  <g>
+    <rect x="806" y="52" width="126" height="24" rx="12" fill="#0E2C4E" stroke="#2C5F9E"/>
+    <circle cx="822" cy="64" r="3.5" fill="#2BE8C4">
+      <animate attributeName="opacity" values="1;0.25;1" dur="1.6s" repeatCount="indefinite"/>
+    </circle>
+    <text x="834" y="69" fill="#CFE0FF" font-family="Consolas, 'Courier New', monospace" font-size="11" letter-spacing="1.2">AUTO CRUISE</text>
   </g>
 
-  <!-- Footer line -->
-  <line x1="80" y1="470" x2="1520" y2="470" stroke="#94a3b8" stroke-opacity=".13"/>
-  <text x="80" y="505" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="13" letter-spacing="1.4" fill="#64748b">LOCAL ONLY · NO CLOUD ACCOUNT · NOT AFFILIATED WITH MICROSOFT</text>
-  <text x="1520" y="505" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="13" letter-spacing="1.2" fill="#5eead4" fill-opacity=".72">v1.0.0 · FREE &amp; OPEN SOURCE</text>
-
-  <!-- Cockpit card -->
   <g>
-    <rect x="1008" y="92" width="512" height="376" rx="34" fill="#07111e" fill-opacity=".92"/>
-    <rect x="1008" y="92" width="512" height="376" rx="34" fill="none" stroke="url(#card-stroke)" stroke-width="1.5"/>
-    <text x="1042" y="134" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="11" letter-spacing="3" fill="#5eead4">AUTOMATION COCKPIT</text>
-    <text x="1478" y="134" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="11" letter-spacing="1.5" fill="#64748b">ONLINE</text>
-    <circle cx="1412" cy="130" r="3.5" fill="#5eead4"/>
+    <rect x="806" y="92" width="404" height="258" rx="16" fill="#081C33" stroke="#2A4E78"/>
+    <rect x="806" y="120" width="404" height="230" fill="#081A2E" clip-path="url(#rwindow)"/>
+    <rect x="806" y="92" width="404" height="28" fill="#0A2542" clip-path="url(#rwindow)"/>
 
-    <circle cx="1264" cy="260" r="128" fill="none" stroke="#5eead4" stroke-opacity=".1"/>
-    <circle cx="1264" cy="260" r="104" fill="none" stroke="#38bdf8" stroke-opacity=".14" stroke-dasharray="2 9"/>
-    <circle cx="1264" cy="260" r="78" fill="url(#mint-glow)" opacity=".55" filter="url(#soft)"/>
-    <circle cx="1264" cy="260" r="66" fill="#0a1a26" stroke="#5eead4" stroke-opacity=".36"/>
-    <path d="M1281 218l-28 48h22l-11 38 37-55h-24z" fill="url(#bolt)"/>
+    <g>
+      <circle cx="824" cy="106" r="3" fill="#FF6B78" opacity="0.8"/>
+      <circle cx="840" cy="106" r="3" fill="#FFC46B" opacity="0.8"/>
+      <circle cx="856" cy="106" r="3" fill="#2BE8C4" opacity="0.8"/>
+    </g>
+    <rect x="878" y="99" width="268" height="16" rx="8" fill="#061428"/>
+    <text x="1012" y="111" text-anchor="middle" fill="#5F87B5" font-family="Consolas, 'Courier New', monospace" font-size="9.5">rewards.bing.com/dashboard</text>
 
-    <g font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="11" fill="#94a3b8">
-      <circle cx="1264" cy="132" r="4" fill="#7dd3fc"/>
-      <text x="1264" y="118" text-anchor="middle" letter-spacing="1.2">SCAN</text>
-      <text x="1264" y="158" text-anchor="middle" fill="#cbd5e1">扫描任务卡片</text>
+    <text x="826" y="144" fill="#7FB2FF" font-family="Consolas, 'Courier New', monospace" font-size="10.5" letter-spacing="2">DAILY SET</text>
+    <circle cx="1158" cy="140" r="5" fill="#FFC46B" opacity="0.9"/>
+    <text x="1170" y="144" fill="#FFC46B" font-family="Consolas, 'Courier New', monospace" font-size="10">+30</text>
 
-      <circle cx="1392" cy="260" r="4" fill="#c4b5fd"/>
-      <text x="1392" y="244" text-anchor="middle" letter-spacing="1.2">DECIDE</text>
-      <text x="1392" y="280" text-anchor="middle" fill="#cbd5e1">规则 / 模型</text>
-
-      <circle cx="1264" cy="388" r="4" fill="#5eead4"/>
-      <text x="1264" y="372" text-anchor="middle" letter-spacing="1.2">CLAIM</text>
-      <text x="1264" y="406" text-anchor="middle" fill="#cbd5e1">只领取，不兑换</text>
-
-      <circle cx="1136" cy="260" r="4" fill="#fbbf24"/>
-      <text x="1136" y="244" text-anchor="middle" letter-spacing="1.2">RUN</text>
-      <text x="1136" y="280" text-anchor="middle" fill="#cbd5e1">每天 08:30</text>
+    <g>
+      <rect x="826" y="154" width="364" height="34" rx="8" fill="#0A2138" stroke="#1E3F63"/>
+      <rect x="834" y="160" width="22" height="22" rx="6" fill="#10345C" stroke="#2C5F9E" stroke-opacity="0.7"/>
+      <circle cx="842" cy="168" r="3.4" fill="none" stroke="#7FB2FF" stroke-width="1.4"/>
+      <path d="M845 171 l3.4 3.4" stroke="#7FB2FF" stroke-width="1.4" stroke-linecap="round"/>
+      <text x="868" y="168" fill="#CFE0FF" font-family="'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="11.5">搜索并浏览</text>
+      <text x="868" y="181" fill="#5F87B5" font-family="Consolas, 'Courier New', monospace" font-size="8.5" letter-spacing="0.8">SEARCH</text>
+      <text x="1146" y="174" text-anchor="end" fill="#FFC46B" font-family="Consolas, 'Courier New', monospace" font-size="9">+10</text>
+      <g>
+        <circle cx="1170" cy="171" r="8" fill="#2BE8C4" fill-opacity="0.14" stroke="#2BE8C4" stroke-opacity="0.65"/>
+        <path d="M1166 171 l3 3 l5 -6" fill="none" stroke="#2BE8C4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <animate attributeName="opacity" values="0.55;1;0.55" dur="3.6s" repeatCount="indefinite"/>
+      </g>
     </g>
 
-    <rect x="1042" y="414" width="444" height="32" rx="16" fill="#0a1725" stroke="#94a3b8" stroke-opacity=".12"/>
-    <circle cx="1062" cy="430" r="3.5" fill="#5eead4"/>
-    <text x="1075" y="435" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="11.5" fill="#94a3b8">本机运行 · 登录态留在本地 · 日志不记录 Key</text>
+    <g>
+      <rect x="826" y="198" width="364" height="34" rx="8" fill="#0A2138" stroke="#1E3F63"/>
+      <rect x="834" y="204" width="22" height="22" rx="6" fill="#10345C" stroke="#2C5F9E" stroke-opacity="0.7"/>
+      <rect x="840" y="210" width="10" height="10" rx="2" fill="none" stroke="#7FB2FF" stroke-width="1.2"/>
+      <path d="M842 216 l2 2 l4 -5" fill="none" stroke="#7FB2FF" stroke-width="1.2" stroke-linecap="round"/>
+      <text x="868" y="212" fill="#CFE0FF" font-family="'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="11.5">每日测验</text>
+      <text x="868" y="225" fill="#5F87B5" font-family="Consolas, 'Courier New', monospace" font-size="8.5" letter-spacing="0.8">QUIZ</text>
+      <text x="1146" y="218" text-anchor="end" fill="#FFC46B" font-family="Consolas, 'Courier New', monospace" font-size="9">+10</text>
+      <g>
+        <circle cx="1170" cy="215" r="8" fill="#2BE8C4" fill-opacity="0.14" stroke="#2BE8C4" stroke-opacity="0.65"/>
+        <path d="M1166 215 l3 3 l5 -6" fill="none" stroke="#2BE8C4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <animate attributeName="opacity" values="0.55;1;0.55" dur="3.6s" begin="0.6s" repeatCount="indefinite"/>
+      </g>
+    </g>
+
+    <g>
+      <rect x="826" y="242" width="364" height="34" rx="8" fill="#0A2138" stroke="#1E3F63"/>
+      <rect x="834" y="248" width="22" height="22" rx="6" fill="#10345C" stroke="#2C5F9E" stroke-opacity="0.7"/>
+      <path d="M842 254 l9 5 l-9 5 z" fill="#7FB2FF"/>
+      <text x="868" y="256" fill="#CFE0FF" font-family="'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="11.5">开放题型</text>
+      <text x="868" y="269" fill="#5F87B5" font-family="Consolas, 'Courier New', monospace" font-size="8.5" letter-spacing="0.8">ADVANCED</text>
+      <rect x="1006" y="249" width="34" height="20" rx="10" fill="#A78BFA" fill-opacity="0.14" stroke="#A78BFA" stroke-opacity="0.45"/>
+      <text x="1023" y="263" text-anchor="middle" fill="#C9B8FF" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700">AI</text>
+      <text x="1146" y="262" text-anchor="end" fill="#FFC46B" font-family="Consolas, 'Courier New', monospace" font-size="9">+10</text>
+      <g>
+        <circle cx="1170" cy="259" r="8" fill="#2BE8C4" fill-opacity="0.14" stroke="#2BE8C4" stroke-opacity="0.65"/>
+        <path d="M1166 259 l3 3 l5 -6" fill="none" stroke="#2BE8C4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <animate attributeName="opacity" values="0.55;1;0.55" dur="3.6s" begin="1.2s" repeatCount="indefinite"/>
+      </g>
+    </g>
+
+    <rect x="826" y="154" width="364" height="2" fill="url(#rscan)">
+      <animate attributeName="y" values="154;274;154" dur="6.4s" repeatCount="indefinite"/>
+    </rect>
+
+    <rect x="826" y="296" width="364" height="32" rx="16" fill="#07182B" stroke="#1E3F63"/>
+    <circle cx="844" cy="312" r="3.5" fill="#2BE8C4">
+      <animate attributeName="opacity" values="1;0.25;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <text x="856" y="316" fill="#7FA3CB" font-family="'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="10">本机会话 · Edge · 不保存 Key</text>
+    <text x="1172" y="316" text-anchor="end" fill="#FFC46B" font-family="Consolas, 'Courier New', monospace" font-size="10">08:30</text>
   </g>
+
+  <text x="74" y="394" fill="#4C6E93" font-family="Consolas, 'Courier New', monospace" font-size="15">MIT · Windows 10/11 · 本地优先 · github.com/ShirakawaFM/bing-reward-free</text>
 </svg>

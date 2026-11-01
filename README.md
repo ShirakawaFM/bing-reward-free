@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/banner.svg" alt="Bing-reward FREE：把每日 Rewards 任务交给自动巡航" width="100%" />
+<img src="assets/banner.svg?v=2" alt="Bing-reward FREE：把每日 Rewards 任务交给自动巡航" width="100%" />
 
 **把每日 Rewards 任务，交给自动巡航。**
 
@@ -9,6 +9,8 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 简体中文 · [English](#english--english-summary)
 
 [![Version](https://img.shields.io/badge/version-1.0.0-5EEAD4?style=flat-square&logo=github&logoColor=white)](https://github.com/ShirakawaFM/bing-reward-free/releases) [![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE) [![Windows](https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows) [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/) [![Playwright](https://img.shields.io/badge/Playwright-1.64-2EAD33?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev/) [![DeepSeek](https://img.shields.io/badge/DeepSeek-%E5%8F%AF%E9%80%89-4D6BFE?style=flat-square)](https://www.deepseek.com/) [![Stars](https://img.shields.io/github/stars/ShirakawaFM/bing-reward-free?style=social&label=Stars)](https://github.com/ShirakawaFM/bing-reward-free/stargazers)
+
+作者：**ShirakawaFM / 白川方明**
 
 </div>
 
@@ -67,7 +69,7 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 | 📌 **托盘常驻** | 左键打开控制台；右键可立即运行、暂停调度、切换低功耗、打开日志文件夹或退出 |
 | 🔒 **本地优先** | 后端只监听 `127.0.0.1` 并使用一次性令牌；登录态、日志、截图不出本机；API Key 不写日志 |
 
-<img src="assets/workflow.svg" alt="一次运行的五步：打开仪表盘 → 扫描任务 → 规则或模型决策 → 浏览与作答 → 只领取 Claim" width="100%" />
+<img src="assets/flow.svg" alt="一次运行的五步：打开仪表盘 → 扫描任务 → 规则或模型决策 → 浏览与作答 → 只领取 Claim" width="100%" />
 
 一次运行只做五件事：**打开仪表盘 → 扫描任务卡片 → 规则或模型决策 → 浏览与作答 → 只领取 Claim。** 不兑换、不购买、不修改账号。
 
@@ -117,7 +119,7 @@ Windows 桌面端 · 复用本机 Edge 登录态 · 基础规则开箱即用 · 
 
 </details>
 
----
+<img src="assets/divider.svg" alt="" width="100%" />
 
 ## 功能细节
 
@@ -466,7 +468,7 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 
 `run-once.bat` 只执行一次；日志同样写入 `logs/rewards_bot.log`。打包版没有独立的“只跑一次”命令行入口，无人值守调度请使用源码版，或保持控制台窗口运行。
 
----
+<img src="assets/divider.svg" alt="" width="100%" />
 
 ## 安全设计与边界
 
@@ -568,7 +570,7 @@ $env:DEEPSEEK_API_KEY = "sk-你的 DeepSeek Key"
 .venv\Scripts\python.exe -m compileall -q rewards_bot gui main.py desktop.py tests
 ```
 
----
+<img src="assets/divider.svg" alt="" width="100%" />
 
 ## 常见问题
 
@@ -738,7 +740,11 @@ bing-rewards-bot/
 │  ├─ app.ico               # EXE 图标
 │  ├─ app-icon.png
 │  ├─ task-browser.ico      # 任务浏览器窗口图标（同时打包进 EXE）
-│  └─ task-browser-icon.png
+│  ├─ task-browser-icon.png
+│  ├─ banner.svg            # README 横幅（1280×420 动态 SVG）
+│  ├─ divider.svg           # 章节分隔线
+│  ├─ flow.svg              # 一次运行的五步
+│  └─ footer.svg            # 页脚签名
 ├─ packaging/
 │  ├─ RewardsPilot.spec     # PyInstaller onefile 配置
 │  └─ version_info.txt      # Windows 文件版本信息
@@ -883,3 +889,5 @@ SHA256：3df22587f8b4ba82ac1b3641e54c323bfc9d1d60aabd6fb9edc7cf92df4f55d9
 ## English / English Summary
 
 **Bing-reward FREE** is a local-first Windows desktop assistant for Microsoft Rewards daily tasks. It reuses your local Edge session, opens the Rewards dashboard on a schedule, completes common quiz / poll / read cards with built-in heuristics, and claims only explicit “Claim” rewards. An optional advanced mode sends an indexed list of up to 140 interactive elements to DeepSeek (or any OpenAI-compatible endpoint) for step-by-step decisions, with domain and high-risk-text guards. Everything runs on `127.0.0.1`; cookies, logs, screenshots and API keys stay on your machine. It is not affiliated with Microsoft, and automating Rewards may violate Microsoft's terms of service. Use at your own risk. Requires Windows 10/11 and Edge; the release EXE is unsigned.
+
+<img src="assets/footer.svg" alt="ShirakawaFM / 白川方明" width="100%" />
